@@ -1,8 +1,7 @@
 -- lua/custom/plugins/mpv_chapter.lua
 
 return {
-  dir = vim.fn.stdpath 'config' .. '/lua/custom/plugins/mpv_chapter',
-  name = 'mpv_chapter',
+  'custom/mpv_chapter', -- local name or repo if you publish later
   lazy = false,
   config = function()
     local mpv_socket = '/tmp/mpvsocket'
@@ -37,7 +36,7 @@ return {
       end
 
       text = trim_and_truncate(text)
-      text = text:gsub('[%\'"`$&{}<>|*\\]', '')
+      text = text:gsub('[%\'"`$&{}<>|*\\]', '') -- strip dangerous characters
 
       if not mpv_running() then
         vim.notify('MPV is not running or socket missing', vim.log.levels.ERROR, { title = 'mpv_chapter' })
@@ -53,7 +52,13 @@ return {
       vim.notify('Sent chapter to MPV: ' .. text, vim.log.levels.INFO, { title = 'mpv_chapter' })
     end
 
-    -- Set the keybinding (- key in normal and visual modes)
-    vim.keymap.set({ 'n', 'v' }, '-', add_chapter, { desc = '[MPV] Add chapter from line or selection' })
+    -- Set keybinding (| key in normal and visual modes)
+    vim.keymap.set({ 'n', 'v' }, '<Right>', add_chapter, { desc = '[MPV] Add chapter from line or selection' })
+
+    -- Optional global export under vim.g.mpv_chapter namespace
+    if vim.g.mpv_chapter == nil then
+      vim.g.mpv_chapter = {}
+    end
+    vim.g.mpv_chapter.add = add_chapter
   end,
 }

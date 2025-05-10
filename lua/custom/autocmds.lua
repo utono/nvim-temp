@@ -1,5 +1,3 @@
--- lua/custom/autocmds.lua
-
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   pattern = '*.txt',
   callback = function()
