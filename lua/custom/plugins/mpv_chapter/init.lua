@@ -37,6 +37,7 @@ return {
       end
 
       text = trim_and_truncate(text)
+      text = text:gsub('[%\'"`$&{}<>|*\\]', '')
 
       if not mpv_running() then
         vim.notify('MPV is not running or socket missing', vim.log.levels.ERROR, { title = 'mpv_chapter' })
@@ -48,7 +49,7 @@ return {
         return
       end
 
-      send_to_mpv(text:gsub("'", "\\'"))
+      send_to_mpv(text)
       vim.notify('Sent chapter to MPV: ' .. text, vim.log.levels.INFO, { title = 'mpv_chapter' })
     end
 

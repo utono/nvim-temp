@@ -5,5 +5,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   callback = function()
     vim.opt_local.number = false
     vim.opt_local.relativenumber = false
+    vim.opt_local.scrolloff = 999
   end,
 })
