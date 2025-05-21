@@ -1,3 +1,26 @@
+-- Minimal pure-Lua base64 encode
+local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+local function base64enc(data)
+  return (
+    (data:gsub('.', function(x)
+      local r, b = '', x:byte()
+      for i = 8, 1, -1 do
+        r = r .. (b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
+      end
+      return r
+    end) .. '0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
+      if #x < 6 then
+        return ''
+      end
+      local c = 0
+      for i = 1, 6 do
+        c = c + (x:sub(i, i) == '1' and 2 ^ (6 - i) or 0)
+      end
+      return b:sub(c + 1, c + 1)
+    end) .. ({ '', '==', '=' })[#data % 3 + 1]
+  )
+end
+
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   pattern = '*.txt',
   callback = function(args)
@@ -28,21 +51,30 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         mpv_cmd { 'add', 'volume', -2 }
       end, { buffer = args.buf, desc = 'Decrease MPV volume' })
 
-      vim.keymap.set('n', 'r', function() -- Seek -5s (backward)
-        mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
-      end, { buffer = args.buf, desc = 'Seek -5s in MPV' })
+      vim.keymap.set('n', 'g', function() -- Previous chapter
+        mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
+      end, { buffer = args.buf, desc = 'Previous chapter in MPV' })
 
-      vim.keymap.set('n', 'c', function() -- Seek +5s (forward)
-        mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
-      end, { buffer = args.buf, desc = 'Seek +5s in MPV' })
+      vim.keymap.set('n', 'G', function() -- Last chapter
+        mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
+      end, { buffer = args.buf, desc = 'Next chapter in MPV' })
 
-      vim.keymap.set('n', 'h', function() -- Next chapter
+      vim.keymap.set('n', 'c', 'k', { buffer = args.buf, desc = 'Move cursor up one line' })
+      vim.keymap.set('n', 'r', 'j', { buffer = args.buf, desc = 'Move cursor down one line' })
+
+      vim.keymap.set('n', 'l', function() -- Next chapter
         mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
       end, { buffer = args.buf, desc = 'Next chapter in MPV' })
 
-      vim.keymap.set('n', 'H', function() -- Last chapter
+      vim.keymap.set('n', 'L', function() -- Last chapter
         mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
       end, { buffer = args.buf, desc = 'Next chapter in MPV' })
+
+      vim.keymap.set('n', 'h', function()
+        local line = vim.api.nvim_get_current_line()
+        local b64 = base64enc(line)
+        mpv_cmd { 'script-message', 'chapters/add-chapter-b64', b64 }
+      end, { buffer = args.buf, desc = 'Add chapter to MPV from current line (base64-safe)' })
 
       vim.keymap.set('n', 't', function() -- Nudge chapter later
         mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
@@ -52,37 +84,29 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
       end, { buffer = args.buf, desc = 'Nudge chapter earlier' })
 
-      vim.keymap.set('n', 's', function() -- Previous chapter
-        mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
-      end, { buffer = args.buf, desc = 'Previous chapter in MPV' })
-
-      vim.keymap.set('n', 'S', function() -- Last chapter
-        mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
-      end, { buffer = args.buf, desc = 'Next chapter in MPV' })
+      vim.keymap.set('n', 's', function() -- Pause/play (cycle pause)
+        mpv_cmd { 'cycle', 'pause' }
+      end, { buffer = args.buf, desc = 'Toggle MPV pause' })
 
       vim.keymap.set('n', 'z', function() -- Remove chapter
         mpv_cmd { 'script-message', 'chapters/remove_chapter' }
       end, { buffer = args.buf, desc = 'Remove current chapter' })
 
-      vim.keymap.set('n', 'g', function() -- Write chapters
-        mpv_cmd { 'script-message', 'chapters/write_chapters' }
-      end, { buffer = args.buf, desc = 'Write chapters' })
-
-      vim.keymap.set('n', '-', function() -- Pause/play (cycle pause)
-        mpv_cmd { 'cycle', 'pause' }
-      end, { buffer = args.buf, desc = 'Toggle MPV pause' })
-
       vim.keymap.set('n', 'd', function() -- Show progress
         mpv_cmd { 'show-progress' }
       end, { buffer = args.buf, desc = 'Show MPV progress' })
 
-      vim.keymap.set('n', 'm', function() -- Add chapter
-        local line = vim.api.nvim_get_current_line()
-        mpv_cmd { 'script-message', 'chapters/add-chapter', line:sub(1, 120) }
-      end, { buffer = args.buf, desc = 'Add chapter to MPV from current line' })
+      vim.keymap.set('n', 'm', function() -- Write chapters
+        mpv_cmd { 'script-message', 'chapters/write_chapters' }
+      end, { buffer = args.buf, desc = 'Write chapters' })
 
-      vim.keymap.set('n', 'w', 'k', { buffer = args.buf, desc = 'Move cursor up one line' })
-      vim.keymap.set('n', 'v', 'j', { buffer = args.buf, desc = 'Move cursor down one line' })
+      vim.keymap.set('n', 'w', function() -- Seek -5s (backward)
+        mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
+      end, { buffer = args.buf, desc = 'Seek -5s in MPV' })
+
+      vim.keymap.set('n', 'v', function() -- Seek +5s (forward)
+        mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
+      end, { buffer = args.buf, desc = 'Seek +5s in MPV' })
     end
   end,
 })
@@ -92,21 +116,21 @@ Key  | MPV Action/Description                         | MPV Command or Vim Actio
 -----|------------------------------------------------|-----------------------------------------------
 }    | Volume up                                      | add volume 2
 ]    | Volume down                                    | add volume -2
-g    | Write chapters                                 | script-message chapters/write_chapters
-c    | Seek +5s (forward)                             | no-osd seek 5 exact
-r    | Seek -5s (backward)                            | no-osd seek -5 exact
-h    | Next chapter                                   | script-message chapter_controls/jump_next_chapter
-H    | Last chapter                                   | script-message chapter_controls/jump_last_chapter
+g    | Previous chapter                               | script-message chapter_controls/jump_previous_chapter
+G    | First chapter                                  | script-message chapter_controls/jump_first_chapter
+c    | Move cursor up one line (Vim)                  | k
+r    | Move cursor down one line (Vim)                | j
+h    | Add chapter with current line                  | script-message chapters/add-chapter <line>
+l    | Next chapter                                   | script-message chapter_controls/jump_next_chapter
+L    | Last chapter                                   | script-message chapter_controls/jump_last_chapter
 t    | Nudge chapter later                            | script-message chapter_controls/nudge_chapter_later
 n    | Nudge chapter earlier                          | script-message chapter_controls/nudge_chapter_earlier
-s    | Previous chapter                               | script-message chapter_controls/jump_previous_chapter
-S    | First chapter                                  | script-message chapter_controls/jump_first_chapter
--    | Toggle pause/play                              | cycle pause
+s    | Toggle pause/play                              | cycle pause
 d    | Show progress                                  | show-progress
-m    | Add chapter with current line                  | script-message chapters/add-chapter <line>
+m    | Write chapters                                 | script-message chapters/write_chapters
+w    | Seek -5s (backward)                            | no-osd seek -5 exact
+v    | Seek +5s (forward)                             | no-osd seek 5 exact
 z    | Remove current chapter                         | script-message chapters/remove_chapter
-w    | Move cursor up one line (Vim)                  | k
-v    | Move cursor down one line (Vim)                | j
 
 Location: These keymaps are only active in .txt buffers under ~/utono/literature/**
 ]]
