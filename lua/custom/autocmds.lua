@@ -76,21 +76,17 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         mpv_cmd { 'script-message', 'chapters/add-chapter-b64', b64 }
       end, { buffer = args.buf, desc = 'Add chapter to MPV from current line (base64-safe)' })
 
-      vim.keymap.set('n', 't', function() -- Nudge chapter later
-        mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
-      end, { buffer = args.buf, desc = 'Nudge chapter later' })
+      vim.keymap.set('n', 't', function() -- Seek -5s (backward)
+        mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
+      end, { buffer = args.buf, desc = 'Seek -5s in MPV' })
 
-      vim.keymap.set('n', 'n', function() -- Nudge chapter earlier
-        mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
-      end, { buffer = args.buf, desc = 'Nudge chapter earlier' })
+      vim.keymap.set('n', 'n', function() -- Seek +5s (forward)
+        mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
+      end, { buffer = args.buf, desc = 'Seek +5s in MPV' })
 
       vim.keymap.set('n', 's', function() -- Pause/play (cycle pause)
         mpv_cmd { 'cycle', 'pause' }
       end, { buffer = args.buf, desc = 'Toggle MPV pause' })
-
-      vim.keymap.set('n', 'z', function() -- Remove chapter
-        mpv_cmd { 'script-message', 'chapters/remove_chapter' }
-      end, { buffer = args.buf, desc = 'Remove current chapter' })
 
       vim.keymap.set('n', 'd', function() -- Show progress
         mpv_cmd { 'show-progress' }
@@ -100,13 +96,17 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         mpv_cmd { 'script-message', 'chapters/write_chapters' }
       end, { buffer = args.buf, desc = 'Write chapters' })
 
-      vim.keymap.set('n', 'w', function() -- Seek -5s (backward)
-        mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
-      end, { buffer = args.buf, desc = 'Seek -5s in MPV' })
+      vim.keymap.set('n', 'w', function() -- Nudge chapter earlier
+        mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
+      end, { buffer = args.buf, desc = 'Nudge chapter earlier' })
 
-      vim.keymap.set('n', 'v', function() -- Seek +5s (forward)
-        mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
-      end, { buffer = args.buf, desc = 'Seek +5s in MPV' })
+      vim.keymap.set('n', 'v', function() -- Nudge chapter later
+        mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
+      end, { buffer = args.buf, desc = 'Nudge chapter later' })
+
+      vim.keymap.set('n', 'z', function() -- Remove chapter
+        mpv_cmd { 'script-message', 'chapters/remove_chapter' }
+      end, { buffer = args.buf, desc = 'Remove current chapter' })
     end
   end,
 })
@@ -123,13 +123,13 @@ r    | Move cursor down one line (Vim)                | j
 h    | Add chapter with current line                  | script-message chapters/add-chapter <line>
 l    | Next chapter                                   | script-message chapter_controls/jump_next_chapter
 L    | Last chapter                                   | script-message chapter_controls/jump_last_chapter
-t    | Nudge chapter later                            | script-message chapter_controls/nudge_chapter_later
-n    | Nudge chapter earlier                          | script-message chapter_controls/nudge_chapter_earlier
+t    | Seek -5s (backward)                            | no-osd seek -5 exact
+n    | Seek +5s (forward)                             | no-osd seek 5 exact
 s    | Toggle pause/play                              | cycle pause
 d    | Show progress                                  | show-progress
 m    | Write chapters                                 | script-message chapters/write_chapters
-w    | Seek -5s (backward)                            | no-osd seek -5 exact
-v    | Seek +5s (forward)                             | no-osd seek 5 exact
+w    | Nudge chapter earlier                          | script-message chapter_controls/nudge_chapter_earlier
+v    | Nudge chapter later                            | script-message chapter_controls/nudge_chapter_later
 z    | Remove current chapter                         | script-message chapters/remove_chapter
 
 Location: These keymaps are only active in .txt buffers under ~/utono/literature/**
