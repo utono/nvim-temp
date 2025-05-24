@@ -51,20 +51,57 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
       end, { buffer = args.buf, desc = 'Next chapter in MPV' })
 
-      vim.keymap.set('n', ']', function() -- Previous chapter
-        mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
-      end, { buffer = args.buf, desc = 'Previous chapter in MPV' })
-
-      vim.keymap.set('n', '9', function() -- First chapter
-        mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
-      end, { buffer = args.buf, desc = 'Next chapter in MPV' })
-
       vim.keymap.set('n', '{', function() -- Next chapter
         mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
       end, { buffer = args.buf, desc = 'Next chapter in MPV' })
 
       vim.keymap.set('n', '3', function() -- Last chapter
         mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
+      end, { buffer = args.buf, desc = 'Next chapter in MPV' })
+
+      vim.keymap.set('n', ',', 'j', { buffer = args.buf, desc = 'Move cursor down one line' })
+      vim.keymap.set('n', '.', 'k', { buffer = args.buf, desc = 'Move cursor up one line' })
+
+      vim.keymap.set('n', 'a', function() -- Pause/play (cycle pause)
+        mpv_cmd { 'cycle', 'pause' }
+      end, { buffer = args.buf, desc = 'Toggle MPV pause' })
+
+      vim.keymap.set('n', 'o', function() -- Seek -5s (backward)
+        mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
+      end, { buffer = args.buf, desc = 'Seek -5s in MPV' })
+
+      vim.keymap.set('n', 'e', function() -- Seek +5s (forward)
+        mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
+      end, { buffer = args.buf, desc = 'Seek +5s in MPV' })
+
+      vim.keymap.set('n', 'u', function()
+        local line = vim.api.nvim_get_current_line()
+        local b64 = base64enc(line)
+        mpv_cmd { 'script-message', 'chapters/add-chapter-b64', b64 }
+      end, { buffer = args.buf, desc = 'Add chapter to MPV from current line (base64-safe)' })
+
+      -- vim.keymap.set('n', "'", function() -- Remove chapter
+      --   mpv_cmd { 'script-message', 'chapters/remove_chapter' }
+      -- end, { buffer = args.buf, desc = 'Remove current chapter' })
+
+      -- vim.keymap.set('n', 'q', function() -- Nudge chapter earlier
+      --   mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
+      -- end, { buffer = args.buf, desc = 'Nudge chapter earlier' })
+
+      -- vim.keymap.set('n', 'j', function() -- Nudge chapter later
+      --   mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
+      -- end, { buffer = args.buf, desc = 'Nudge chapter later' })
+
+      -- vim.keymap.set('n', 'k', function() -- Write chapters
+      --   mpv_cmd { 'script-message', 'chapters/write_chapters' }
+      -- end, { buffer = args.buf, desc = 'Write chapters' })
+
+      vim.keymap.set('n', ']', function() -- Previous chapter
+        mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
+      end, { buffer = args.buf, desc = 'Previous chapter in MPV' })
+
+      vim.keymap.set('n', '9', function() -- First chapter
+        mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
       end, { buffer = args.buf, desc = 'Next chapter in MPV' })
 
       vim.keymap.set('n', '}', function() -- Next chapter
@@ -75,41 +112,20 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
       end, { buffer = args.buf, desc = 'Next chapter in MPV' })
 
-      vim.keymap.set('n', ',', 'j', { buffer = args.buf, desc = 'Move cursor down one line' })
-      vim.keymap.set('n', '.', 'k', { buffer = args.buf, desc = 'Move cursor up one line' })
-
       vim.keymap.set('n', 'c', 'k', { buffer = args.buf, desc = 'Move cursor up one line' })
       vim.keymap.set('n', 'r', 'j', { buffer = args.buf, desc = 'Move cursor down one line' })
-
-      vim.keymap.set('n', 'a', function() -- Pause/play (cycle pause)
-        mpv_cmd { 'cycle', 'pause' }
-      end, { buffer = args.buf, desc = 'Toggle MPV pause' })
-
-      vim.keymap.set('n', 's', function() -- Pause/play (cycle pause)
-        mpv_cmd { 'cycle', 'pause' }
-      end, { buffer = args.buf, desc = 'Toggle MPV pause' })
-
-      vim.keymap.set('n', 'o', function() -- Seek -5s (backward)
-        mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
-      end, { buffer = args.buf, desc = 'Seek -5s in MPV' })
 
       vim.keymap.set('n', 'g', function() -- Seek -5s (backward)
         mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
       end, { buffer = args.buf, desc = 'Seek -5s in MPV' })
 
-      vim.keymap.set('n', 'e', function() -- Seek +5s (forward)
-        mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
-      end, { buffer = args.buf, desc = 'Seek +5s in MPV' })
-
       vim.keymap.set('n', 'l', function() -- Seek +5s (forward)
         mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
       end, { buffer = args.buf, desc = 'Seek +5s in MPV' })
 
-      vim.keymap.set('n', 'u', function()
-        local line = vim.api.nvim_get_current_line()
-        local b64 = base64enc(line)
-        mpv_cmd { 'script-message', 'chapters/add-chapter-b64', b64 }
-      end, { buffer = args.buf, desc = 'Add chapter to MPV from current line (base64-safe)' })
+      vim.keymap.set('n', 'd', function() -- Show progress
+        mpv_cmd { 'show-progress' }
+      end, { buffer = args.buf, desc = 'Show MPV progress' })
 
       vim.keymap.set('n', 'h', function()
         local line = vim.api.nvim_get_current_line()
@@ -117,41 +133,25 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         mpv_cmd { 'script-message', 'chapters/add-chapter-b64', b64 }
       end, { buffer = args.buf, desc = 'Add chapter to MPV from current line (base64-safe)' })
 
-      vim.keymap.set('n', 'd', function() -- Show progress
-        mpv_cmd { 'show-progress' }
-      end, { buffer = args.buf, desc = 'Show MPV progress' })
-
-      -- vim.keymap.set('n', "'", function() -- Remove chapter
-      --   mpv_cmd { 'script-message', 'chapters/remove_chapter' }
-      -- end, { buffer = args.buf, desc = 'Remove current chapter' })
-
-      vim.keymap.set('n', 'z', function() -- Remove chapter
-        mpv_cmd { 'script-message', 'chapters/remove_chapter' }
-      end, { buffer = args.buf, desc = 'Remove current chapter' })
-
-      -- vim.keymap.set('n', 'q', function() -- Nudge chapter earlier
-      --   mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
-      -- end, { buffer = args.buf, desc = 'Nudge chapter earlier' })
+      vim.keymap.set('n', 's', function() -- Pause/play (cycle pause)
+        mpv_cmd { 'cycle', 'pause' }
+      end, { buffer = args.buf, desc = 'Toggle MPV pause' })
 
       vim.keymap.set('n', 'v', function() -- Nudge chapter earlier
         mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
       end, { buffer = args.buf, desc = 'Nudge chapter earlier' })
 
-      -- vim.keymap.set('n', 'j', function() -- Nudge chapter later
-      --   mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
-      -- end, { buffer = args.buf, desc = 'Nudge chapter later' })
-
       vim.keymap.set('n', 'w', function() -- Nudge chapter later
         mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
       end, { buffer = args.buf, desc = 'Nudge chapter later' })
 
-      -- vim.keymap.set('n', 'k', function() -- Write chapters
-      --   mpv_cmd { 'script-message', 'chapters/write_chapters' }
-      -- end, { buffer = args.buf, desc = 'Write chapters' })
-
       vim.keymap.set('n', 'm', function() -- Write chapters
         mpv_cmd { 'script-message', 'chapters/write_chapters' }
       end, { buffer = args.buf, desc = 'Write chapters' })
+
+      vim.keymap.set('n', 'z', function() -- Remove chapter
+        mpv_cmd { 'script-message', 'chapters/remove_chapter' }
+      end, { buffer = args.buf, desc = 'Remove current chapter' })
     end
   end,
 })
