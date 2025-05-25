@@ -73,6 +73,18 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       local line = vim.api.nvim_get_current_line()
       mpv_cmd { 'script-message', 'chapters/add-chapter-b64', base64enc(line) }
     end, 'Add chapter (base64) to MPV (current line)')
+    set('n', '[', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
+    end, 'Previous chapter')
+    set('n', '2', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
+    end, 'First chapter')
+    set('n', '{', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
+    end, 'Next chapter')
+    set('n', '3', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
+    end, 'Last chapter')
     set('n', '}', function()
       mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
     end, 'Previous chapter')
@@ -115,6 +127,13 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 'z', function()
       mpv_cmd { 'script-message', 'chapters/remove_chapter' }
     end, 'Remove chapter')
+    set('n', '+', function()
+      mpv_cmd { 'add', 'speed', 0.1 }
+    end, 'Increase MPV speed by 0.1')
+
+    set('n', '-', function()
+      mpv_cmd { 'add', 'speed', -0.1 }
+    end, 'Decrease MPV speed by 0.1')
 
     -- Optional: Add more keymaps as needed
   end,

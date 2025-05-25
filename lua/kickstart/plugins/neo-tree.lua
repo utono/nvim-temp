@@ -18,8 +18,10 @@ return {
   opts = {
     filesystem = {
       window = {
+        -- ...other config
         mappings = {
           -- ['\\'] = 'close_window', -- Optional: Map comma to close Neo-tree windows within the plugin
+          ['E'] = 'expand_all_nodes', -- E.g., Shift+e expands all folders in Neo-tree UI
         },
       },
     },
