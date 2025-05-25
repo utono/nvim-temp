@@ -43,21 +43,21 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         vim.fn.jobstart { 'sh', '-c', string.format("echo '%s' | socat - %s", json, mpv_socket) }
       end
 
-      vim.keymap.set('n', '[', function() -- Previous chapter
-        mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
-      end, { buffer = args.buf, desc = 'Previous chapter in MPV' })
-
-      vim.keymap.set('n', '2', function() -- First chapter
-        mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
-      end, { buffer = args.buf, desc = 'Next chapter in MPV' })
-
-      vim.keymap.set('n', '{', function() -- Next chapter
-        mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
-      end, { buffer = args.buf, desc = 'Next chapter in MPV' })
-
-      vim.keymap.set('n', '3', function() -- Last chapter
-        mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
-      end, { buffer = args.buf, desc = 'Next chapter in MPV' })
+      -- vim.keymap.set('n', '[', function() -- Previous chapter
+      --   mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
+      -- end, { buffer = args.buf, desc = 'Previous chapter in MPV' })
+      --
+      -- vim.keymap.set('n', '2', function() -- First chapter
+      --   mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
+      -- end, { buffer = args.buf, desc = 'Next chapter in MPV' })
+      --
+      -- vim.keymap.set('n', '{', function() -- Next chapter
+      --   mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
+      -- end, { buffer = args.buf, desc = 'Next chapter in MPV' })
+      --
+      -- vim.keymap.set('n', '3', function() -- Last chapter
+      --   mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
+      -- end, { buffer = args.buf, desc = 'Next chapter in MPV' })
 
       vim.keymap.set('n', ',', 'j', { buffer = args.buf, desc = 'Move cursor down one line' })
       vim.keymap.set('n', '.', 'k', { buffer = args.buf, desc = 'Move cursor up one line' })
@@ -96,19 +96,19 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       --   mpv_cmd { 'script-message', 'chapters/write_chapters' }
       -- end, { buffer = args.buf, desc = 'Write chapters' })
 
-      vim.keymap.set('n', ']', function() -- Previous chapter
+      vim.keymap.set('n', '}', function() -- Previous chapter
         mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
       end, { buffer = args.buf, desc = 'Previous chapter in MPV' })
 
-      vim.keymap.set('n', '9', function() -- First chapter
+      vim.keymap.set('n', '8', function() -- First chapter
         mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
       end, { buffer = args.buf, desc = 'Next chapter in MPV' })
 
-      vim.keymap.set('n', '}', function() -- Next chapter
+      vim.keymap.set('n', ']', function() -- Next chapter
         mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
       end, { buffer = args.buf, desc = 'Next chapter in MPV' })
 
-      vim.keymap.set('n', '8', function() -- Last chapter
+      vim.keymap.set('n', '9', function() -- Last chapter
         mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
       end, { buffer = args.buf, desc = 'Next chapter in MPV' })
 
@@ -137,17 +137,17 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         mpv_cmd { 'cycle', 'pause' }
       end, { buffer = args.buf, desc = 'Toggle MPV pause' })
 
-      vim.keymap.set('n', 'v', function() -- Nudge chapter earlier
-        mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
-      end, { buffer = args.buf, desc = 'Nudge chapter earlier' })
-
-      vim.keymap.set('n', 'w', function() -- Nudge chapter later
-        mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
-      end, { buffer = args.buf, desc = 'Nudge chapter later' })
-
       vim.keymap.set('n', 'm', function() -- Write chapters
         mpv_cmd { 'script-message', 'chapters/write_chapters' }
       end, { buffer = args.buf, desc = 'Write chapters' })
+
+      vim.keymap.set('n', 'w', function() -- Nudge chapter earlier
+        mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
+      end, { buffer = args.buf, desc = 'Nudge chapter earlier' })
+
+      vim.keymap.set('n', 'v', function() -- Nudge chapter later
+        mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
+      end, { buffer = args.buf, desc = 'Nudge chapter later' })
 
       vim.keymap.set('n', 'z', function() -- Remove chapter
         mpv_cmd { 'script-message', 'chapters/remove_chapter' }
