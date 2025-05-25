@@ -115,9 +115,18 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 's', function()
       mpv_cmd { 'cycle', 'pause' }
     end, 'Toggle MPV pause')
+    set('n', 'y', function()
+      mpv_cmd { 'script-message', 'chapters/write_chapters' }
+    end, 'Write chapters')
     set('n', 'm', function()
       mpv_cmd { 'script-message', 'chapters/write_chapters' }
     end, 'Write chapters')
+    set('n', '<Tab>', function()
+      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
+    end, 'Nudge chapter earlier')
+    set('n', 'i', function()
+      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
+    end, 'Nudge chapter later')
     set('n', 'w', function()
       mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
     end, 'Nudge chapter earlier')
