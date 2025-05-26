@@ -4,6 +4,8 @@
 -- It disables line numbers, sets infinite scrolloff, and establishes
 -- buffer-local keymaps for integration with MPV.
 -- All other global autocommands should be in kickstart/plugins/autocmds.lua.
+--
+-- Keymaps are grouped and ordered to match physical real_prog_dvorak layout
 
 local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 local function base64enc(data)
@@ -58,8 +60,58 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       vim.keymap.set(mode, lhs, rhs, { buffer = args.buf, desc = desc })
     end
 
+    set('n', '+', function()
+      mpv_cmd { 'add', 'speed', 0.1 }
+    end, 'Increase MPV speed by 0.1')
+
+    set('n', '[', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
+    end, 'Previous chapter')
+    set('n', '2', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
+    end, 'First chapter')
+    set('n', '{', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
+    end, 'Next chapter')
+    set('n', '3', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
+    end, 'Last chapter')
+
+    set('n', '}', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
+    end, 'Previous chapter')
+    set('n', '8', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
+    end, 'First chapter')
+    set('n', ']', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
+    end, 'Next chapter')
+    set('n', '9', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
+    end, 'Last chapter')
+
+    set('n', '<Tab>', function()
+      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
+    end, 'Nudge chapter earlier')
     set('n', ',', 'j', 'Move cursor down one line')
     set('n', '.', 'k', 'Move cursor up one line')
+    set('n', 'y', function()
+      mpv_cmd { 'script-message', 'chapters/write_chapters' }
+    end, 'Write chapters')
+
+    set('n', 'g', function()
+      mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
+    end, 'Seek -5s in MPV')
+    set('n', 'c', 'k', 'Move cursor up one line')
+    set('n', 'r', 'j', 'Move cursor down one line')
+    set('n', 'l', function()
+      mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
+    end, 'Seek +5s in MPV')
+
+    set('n', '\\', function()
+      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
+    end, 'Nudge chapter later')
+
     set('n', 'a', function()
       mpv_cmd { 'cycle', 'pause' }
     end, 'Toggle MPV pause')
@@ -73,40 +125,12 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       local line = vim.api.nvim_get_current_line()
       mpv_cmd { 'script-message', 'chapters/add-chapter-b64', base64enc(line) }
     end, 'Add chapter (base64) to MPV (current line)')
-    set('n', '[', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
-    end, 'Previous chapter')
-    set('n', '2', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
-    end, 'First chapter')
-    set('n', '{', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
-    end, 'Next chapter')
-    set('n', '3', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
-    end, 'Last chapter')
-    set('n', '}', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
-    end, 'Previous chapter')
-    set('n', '8', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
-    end, 'First chapter')
-    set('n', ']', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
-    end, 'Next chapter')
-    set('n', '9', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
-    end, 'Last chapter')
-    set('n', 'c', 'k', 'Move cursor up one line')
-    set('n', 'r', 'j', 'Move cursor down one line')
-    set('n', 'g', function()
-      mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
-    end, 'Seek -5s in MPV')
-    set('n', 'l', function()
-      mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
-    end, 'Seek +5s in MPV')
+
+    set('n', 'i', function()
+      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
+    end, 'Nudge chapter later')
     set('n', 'd', function()
-      mpv_cmd { 'show-progress' }
+      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
     end, 'Show MPV progress')
     set('n', 'h', function()
       local line = vim.api.nvim_get_current_line()
@@ -115,34 +139,17 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 's', function()
       mpv_cmd { 'cycle', 'pause' }
     end, 'Toggle MPV pause')
-    set('n', 'y', function()
-      mpv_cmd { 'script-message', 'chapters/write_chapters' }
-    end, 'Write chapters')
-    set('n', 'm', function()
-      mpv_cmd { 'script-message', 'chapters/write_chapters' }
-    end, 'Write chapters')
-    set('n', '<Tab>', function()
-      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
-    end, 'Nudge chapter earlier')
-    set('n', 'i', function()
-      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
-    end, 'Nudge chapter later')
-    set('n', 'w', function()
-      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
-    end, 'Nudge chapter earlier')
-    set('n', 'v', function()
-      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
-    end, 'Nudge chapter later')
-    set('n', 'z', function()
-      mpv_cmd { 'script-message', 'chapters/remove_chapter' }
-    end, 'Remove chapter')
-    set('n', '+', function()
-      mpv_cmd { 'add', 'speed', 0.1 }
-    end, 'Increase MPV speed by 0.1')
 
     set('n', '-', function()
       mpv_cmd { 'add', 'speed', -0.1 }
     end, 'Decrease MPV speed by 0.1')
+
+    set('n', 'm', function()
+      mpv_cmd { 'script-message', 'chapters/write_chapters' }
+    end, 'Write chapters')
+    set('n', 'z', function()
+      mpv_cmd { 'script-message', 'chapters/remove_chapter' }
+    end, 'Remove chapter')
 
     -- Optional: Add more keymaps as needed
   end,
