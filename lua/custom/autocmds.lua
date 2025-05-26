@@ -32,11 +32,17 @@ end
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   pattern = '*.txt',
   callback = function(args)
+    -- OVERRIDE: Skip all customizations if override is set
+    if vim.env.LITERATURE_OVERRIDE == '1' then
+      return
+    end
+
     local fname = vim.api.nvim_buf_get_name(args.buf)
     local home = vim.fn.expand '~'
     if fname:find(home .. '/utono/literature/', 1, true) ~= 1 then
       return
     end
+    -- ... rest of your code
 
     -- Buffer-local options
     vim.opt_local.number = false
@@ -144,6 +150,9 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       mpv_cmd { 'add', 'speed', -0.1 }
     end, 'Decrease MPV speed by 0.1')
 
+    set('n', "'", function()
+      mpv_cmd { 'script-message', 'chapters/remove_chapter' }
+    end, 'Remove chapter')
     set('n', 'm', function()
       mpv_cmd { 'script-message', 'chapters/write_chapters' }
     end, 'Write chapters')
@@ -158,6 +167,23 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
 -- Neo-tree auto open on VimEnter (if desired)
 vim.api.nvim_create_autocmd('VimEnter', {
   callback = function()
-    require('neo-tree.command').execute { action = 'show', source = 'filesystem' }
+    -- Check all buffers for files matching ~/utono/literature/*.txt
+    local home = vim.fn.expand '~'
+    local ignore_neotree = false
+
+    -- Get list of files passed on command line, or currently opened
+    -- (For Neovim >=0.7, use vim.v.argv for command line args)
+    local buffers = vim.api.nvim_list_bufs()
+    for _, buf in ipairs(buffers) do
+      local fname = vim.api.nvim_buf_get_name(buf)
+      if fname ~= '' and fname:sub(1, #home + 18) == home .. '/utono/literature/' and fname:sub(-4) == '.txt' then
+        ignore_neotree = true
+        break
+      end
+    end
+
+    if not ignore_neotree then
+      require('neo-tree.command').execute { action = 'show', source = 'filesystem' }
+    end
   end,
 })
