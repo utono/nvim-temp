@@ -64,23 +64,14 @@ M.gloss_selection = function()
   })
 
   vim.bo[buf].filetype = 'markdown'
+  vim.wo[win].wrap = true
+  vim.wo[win].linebreak = true
 
-  -- Save current guicursor value
-  local original_guicursor = vim.o.guicursor
-
-  -- Set a solid block cursor that doesn't blink (or hide it entirely)
-  vim.o.guicursor = 'n-v-c:block' -- solid block, no blink
-  -- vim.o.guicursor = 'a:Cursor/lCursor' -- fully hidden
-  -- vim.o.guicursor = 'n-v-c:ver1'       -- minimal dot-like vertical bar
-
-  -- When the gloss window closes, restore the previous guicursor setting
   vim.keymap.set('n', 'q', function()
-    vim.o.guicursor = original_guicursor
     vim.api.nvim_win_close(0, true)
   end, { buffer = buf, nowait = true, silent = true })
 
   vim.keymap.set('n', '<Esc>', function()
-    vim.o.guicursor = original_guicursor
     vim.api.nvim_win_close(0, true)
   end, { buffer = buf, nowait = true, silent = true })
 end
