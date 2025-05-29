@@ -70,6 +70,9 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       mpv_cmd { 'add', 'speed', 0.1 }
     end, 'Increase MPV speed by 0.1')
 
+    set('n', '(', function()
+      mpv_cmd { 'script-message', 'dynamic_chapter_loop/toggle' }
+    end, 'Toggle chapter loop')
     set('n', '[', function()
       mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
     end, 'Previous chapter')
@@ -150,6 +153,9 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       mpv_cmd { 'add', 'speed', -0.1 }
     end, 'Decrease MPV speed by 0.1')
 
+    set('n', '<Space>', function()
+      mpv_cmd { 'script-message', 'dynamic_chapter_loop/toggle' }
+    end, 'Toggle chapter loop')
     set('n', "'", function()
       mpv_cmd { 'script-message', 'chapters/remove_chapter' }
     end, 'Remove chapter')
@@ -183,7 +189,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
     end
 
     if not ignore_neotree then
-      require('neo-tree.command').execute { action = 'show', source = 'filesystem' }
+      require('neo-tree.command').execute { action = 'hide', source = 'filesystem' }
     end
   end,
 })
