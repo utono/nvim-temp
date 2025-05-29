@@ -95,8 +95,9 @@ end, { noremap = true, silent = true })
 
 vim.keymap.set('i', 'ht', '<Esc>', { desc = 'Exit insert mode' })
 
-vim.keymap.set('v', 'x', function()
-  require('custom.gloss').gloss_selection()
-end, { desc = 'Gloss Shakespearean selection (Arden style)' })
+vim.keymap.set('v', 'q', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
+  desc = 'Gloss selected Shakespeare text (Arden style)',
+  silent = true,
+})
 
 -- vim: ts=2 sts=2 sw=2 et

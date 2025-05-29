@@ -7,20 +7,14 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def gloss(text):
     prompt = f"""You are a literary editor for the Arden Shakespeare series.
-Gloss the following passage from Shakespeare line-by-line.
 
-For each line:
-- First, quote the original line exactly.
-- Then, on the next line, provide a modern English paraphrase or gloss.
-- Include brief notes for difficult words, cultural references, or rhetorical effects.
-- Leave a blank line between each pair.
+Your task is to gloss the following Shakespearean passage as a block of modern English paraphrase and contextual explanation.
 
-Do not label the lines. Do not summarize the play. Format strictly as:
+Do not quote or reprint the original lines in your gloss. Instead, write a fluent, line-by-line modern gloss that preserves the dramatic flow, style, and rhetorical tone. Focus on clarity and insight.
 
-[Shakespeare line]  
-[Modern gloss or explanation]
+Do not label the gloss. Do not summarize the play or scene.
 
-Only gloss the following passage:
+Only gloss this passage:
 
 {text}
 """
