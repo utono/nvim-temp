@@ -8,9 +8,9 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 def gloss(text):
     prompt = f"""You are a literary editor for the Arden Shakespeare series.
 
-Your task is to gloss the following Shakespearean passage as a block of modern English paraphrase and contextual explanation.
+In iambic pentameter (or close to it) that does not halt, gloss the following Shakespearean passage.
 
-Do not quote or reprint the original lines in your gloss. Instead, write a fluent, line-by-line modern gloss that preserves the dramatic flow, style, and rhetorical tone. Focus on clarity and insight.
+Do not quote or reprint the original lines in your gloss. Instead, write a fluent, line-by-line gloss that preserves the dramatic flow, style, and rhetorical tone. Focus on clarity and insight.
 
 Do not label the gloss. Do not summarize the play or scene.
 
