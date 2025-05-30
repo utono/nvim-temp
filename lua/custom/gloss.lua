@@ -23,11 +23,11 @@ local function wrap_line(line, max_width, prefix)
     if i == #prefix then
       i = available
     end
-    table.insert(wrapped, raw:sub(1, i):gsub('%s+$', ''))
+    wrapped[#wrapped + 1] = raw:sub(1, i):gsub('%s+$', '')
     raw = prefix .. raw:sub(i + 1):gsub('^%s+', '')
   end
 
-  table.insert(wrapped, raw)
+  wrapped[#wrapped + 1] = raw
   return wrapped
 end
 
