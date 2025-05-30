@@ -31,6 +31,24 @@ M.gloss_selection = function()
   f:close()
 
   local gloss_output = vim.fn.systemlist('python3 ~/.config/nvim/python/gloss_text.py < ' .. tmpfile)
+  -- Log the gloss output to a file
+  local log_path = vim.fn.expand '~/utono/literature/gloss-log.md'
+  local log_file = io.open(log_path, 'a')
+
+  if log_file then
+    log_file:write '\n---\n'
+    log_file:write '**Quoted Selection:**\n\n'
+    for _, line in ipairs(lines) do
+      log_file:write('> ' .. line .. '\n')
+    end
+    log_file:write '\n**Gloss:**\n\n'
+    for _, line in ipairs(gloss_output) do
+      log_file:write(line .. '\n')
+    end
+    log_file:close()
+  else
+    vim.notify('Could not write to gloss-log.md', vim.log.levels.ERROR)
+  end
   vim.fn.delete(tmpfile)
 
   -- Format quoted lines only

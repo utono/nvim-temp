@@ -66,6 +66,16 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       vim.keymap.set(mode, lhs, rhs, { buffer = args.buf, desc = desc })
     end
 
+    vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
+      buffer = args.buf,
+      desc = 'Gloss selected Shakespeare text (Arden style)',
+      silent = true,
+    })
+
+    set('n', '<leader>gl', function()
+      vim.cmd 'edit ~/utono/literature/gloss-log.md'
+    end, 'Open gloss log')
+
     set('n', '+', function()
       mpv_cmd { 'add', 'speed', 0.1 }
     end, 'Increase MPV speed by 0.1')
@@ -105,8 +115,8 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', ',', 'j', 'Move cursor down one line')
     set('n', '.', 'k', 'Move cursor up one line')
     set('n', 'y', function()
-      mpv_cmd { 'script-message', 'chapters/write_chapters' }
-    end, 'Write chapters')
+      mpv_cmd { 'script-message', 'dynamic_chapter_loop/toggle' }
+    end, 'Toggle chapter loop')
 
     set('n', 'g', function()
       mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
@@ -153,9 +163,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       mpv_cmd { 'add', 'speed', -0.1 }
     end, 'Decrease MPV speed by 0.1')
 
-    set('n', '<Space>', function()
-      mpv_cmd { 'script-message', 'dynamic_chapter_loop/toggle' }
-    end, 'Toggle chapter loop')
     set('n', "'", function()
       mpv_cmd { 'script-message', 'chapters/remove_chapter' }
     end, 'Remove chapter')
