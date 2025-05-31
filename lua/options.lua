@@ -82,4 +82,6 @@ vim.opt.diffopt:append {
 -- management tools like :mksession, or in your case, mini.sessions (as configured in mini.lua).
 vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,resize,globals'
 
+vim.opt.modeline = false
+
 -- vim: ts=2 sts=2 sw=2 et
