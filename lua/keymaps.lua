@@ -100,4 +100,6 @@ vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<C
   silent = true,
 })
 
+vim.keymap.set('n', '<leader>tz', '<cmd>ZenMode<CR>', { desc = '[T]oggle [Z]en Mode' })
+
 -- vim: ts=2 sts=2 sw=2 et
