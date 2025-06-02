@@ -16,16 +16,21 @@ return {
       return {
         lualine_a = {},
         lualine_b = {},
-        lualine_c = {
-          {
-            'filename',
-            path = 0, -- just the file name
-            color = { fg = '#444b6a', gui = 'italic' }, -- dim + italic
-          },
-        },
+        lualine_c = {},
         lualine_x = {},
         lualine_y = {},
-        lualine_z = {},
+        lualine_z = {
+          {
+            'filename',
+            path = 0,
+            color = { fg = '#4b5263', bg = 'none' }, -- darker gray, transparent bg
+            symbols = {
+              modified = ' [+]',
+              readonly = ' [-]',
+              unnamed = '[No Name]',
+            },
+          },
+        },
       }
     end
 
