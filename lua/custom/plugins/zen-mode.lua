@@ -41,4 +41,14 @@ return {
       end
     end,
   },
+  config = function(_, opts)
+    require('zen-mode').setup(opts)
+
+    -- Always reset Kitty font size when exiting Neovim
+    vim.api.nvim_create_autocmd('VimLeavePre', {
+      callback = function()
+        vim.fn.system { 'kitty', '@', 'set-font-size', '0' }
+      end,
+    })
+  end,
 }
