@@ -41,14 +41,4 @@ return {
       end
     end,
   },
-  init = function()
-    vim.api.nvim_create_autocmd('FileType', {
-      pattern = { 'markdown', 'text' },
-      callback = function()
-        vim.schedule(function()
-          require('zen-mode').toggle()
-        end)
-      end,
-    })
-  end,
 }

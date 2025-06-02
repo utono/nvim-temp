@@ -100,6 +100,10 @@ vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<C
   silent = true,
 })
 
-vim.keymap.set('n', '<leader>tz', '<cmd>ZenMode<CR>', { desc = '[T]oggle [Z]en Mode' })
+vim.keymap.set('n', '<leader>nn', '<cmd>ZenMode<CR>', { desc = 'Toggle Zen Mode' })
+
+vim.keymap.set('n', '<leader>nt', '<cmd>ToggleStatuslineZen<CR>', {
+  desc = 'Toggle Lualine Zen Statusline',
+})
 
 -- vim: ts=2 sts=2 sw=2 et
