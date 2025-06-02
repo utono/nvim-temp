@@ -34,12 +34,26 @@ return {
       vim.b._zen_prev_scrolloff = vim.o.scrolloff
       vim.o.scrolloff = math.floor(zen_height / 2)
 
-      -- Determine font size based on path or filetype
+      -- Determine font size and scrolling behavior based on path or filetype
       local file = vim.api.nvim_buf_get_name(0)
       local filetype = vim.bo.filetype
 
       if file:find(vim.fn.expand '~/utono/literature/', 1, true) == 1 then
         vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+4' }
+        vim.opt_local.scroll = 1
+        vim.opt.guicursor = { 'n-v-c:block' }
+        vim.opt_local.cursorline = false
+        vim.diagnostic.disable(0)
+        vim.cmd 'hi! link GitSignsAdd Normal'
+        vim.cmd 'hi! link GitSignsChange Normal'
+        vim.cmd 'hi! link GitSignsDelete Normal'
+
+        -- Enable smooth scroll in Neovide if applicable
+        if vim.g.neovide then
+          vim.g.neovide_scroll_animation_length = 0.2
+          vim.g.neovide_cursor_animation_length = 0
+          vim.g.neovide_hide_mouse_when_typing = true
+        end
       elseif filetype == 'markdown' or filetype == 'rst' then
         vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+2' }
       else
