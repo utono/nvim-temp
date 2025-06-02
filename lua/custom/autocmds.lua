@@ -1,31 +1,11 @@
+-- ~/.config/nvim/lua/custom/autocmds.lua
+--
 -- [[ Custom Autocommands for .txt files in ~/utono/literature/ ]]
 --
 -- This section is only triggered for .txt files under ~/utono/literature/**
 -- It integrates MPV controls, disables global UI distractions, and assumes
 -- Zen Mode handles visual presentation.
 -- Keymaps are grouped and ordered to match physical real_prog_dvorak layout
-
-local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-local function base64enc(data)
-  return (
-    (data:gsub('.', function(x)
-      local r, b = '', x:byte()
-      for i = 8, 1, -1 do
-        r = r .. (b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
-      end
-      return r
-    end) .. '0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
-      if #x < 6 then
-        return ''
-      end
-      local c = 0
-      for i = 1, 6 do
-        c = c + (x:sub(i, i) == '1' and 2 ^ (6 - i) or 0)
-      end
-      return b:sub(c + 1, c + 1)
-    end) .. ({ '', '==', '=' })[#data % 3 + 1]
-  )
-end
 
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   pattern = '*.txt',
@@ -40,7 +20,27 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       return
     end
 
-    -- Buffer-local scrolloff is now managed by Zen Mode
+    local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    local function base64enc(data)
+      return (
+        (data:gsub('.', function(x)
+          local r, b = '', x:byte()
+          for i = 8, 1, -1 do
+            r = r .. (b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
+          end
+          return r
+        end) .. '0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
+          if #x < 6 then
+            return ''
+          end
+          local c = 0
+          for i = 1, 6 do
+            c = c + (x:sub(i, i) == '1' and 2 ^ (6 - i) or 0)
+          end
+          return b:sub(c + 1, c + 1)
+        end) .. ({ '', '==', '=' })[#data % 3 + 1]
+      )
+    end
 
     local mpv_socket = '/tmp/mpvsocket'
     local function mpv_cmd(tbl)
@@ -51,12 +51,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     local set = function(mode, lhs, rhs, desc)
       vim.keymap.set(mode, lhs, rhs, { buffer = args.buf, desc = desc })
     end
-
-    vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
-      buffer = args.buf,
-      desc = 'Gloss selected Shakespeare text (Arden style)',
-      silent = true,
-    })
 
     set('n', '+', function()
       mpv_cmd { 'add', 'speed', 0.1 }
@@ -109,6 +103,38 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', '<leader>', function()
       mpv_cmd { 'cycle', 'pause' }
     end, 'Pause MPV')
+
+    vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
+      buffer = args.buf,
+      desc = 'Gloss selected Shakespeare text (Arden style)',
+      silent = true,
+    })
+
+    -- In normal mode, remap <Esc> to move to first non-blank char
+    vim.keymap.set('n', '<Esc>', function()
+      vim.cmd.nohlsearch() -- clear search highlights
+      local col = vim.fn.col '.'
+      local first_nonblank = vim.fn.col '^'
+      if col ~= first_nonblank then
+        vim.cmd.normal { '^', bang = true }
+      end
+    end, { buffer = args.buf, desc = 'Clear search & move to ^' })
+
+    -- Automatically move to first non-blank character on mode leave
+    vim.api.nvim_create_autocmd('ModeChanged', {
+      buffer = args.buf,
+      group = vim.api.nvim_create_augroup('LiteratureCursorAdjust', { clear = false }),
+      callback = function()
+        -- Only act when entering normal mode
+        if vim.fn.mode() == 'n' then
+          local col = vim.fn.col '.'
+          local first_nonblank = vim.fn.col '^'
+          if col ~= first_nonblank then
+            vim.cmd.normal { '^', bang = true }
+          end
+        end
+      end,
+    })
   end,
 })
 
