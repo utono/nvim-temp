@@ -49,11 +49,19 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     vim.opt_local.relativenumber = false
     vim.opt_local.scrolloff = 999
 
-    -- Optional: Black/white color scheme for distraction-free mode
-    vim.cmd 'highlight Normal guibg=#000000 guifg=#ffffff'
-    vim.cmd 'highlight NormalNC guibg=#000000 guifg=#ffffff'
-    vim.cmd 'highlight SignColumn guibg=#000000 guifg=#ffffff'
-    vim.cmd 'highlight VertSplit guibg=#000000'
+    -- Optional: Transparent background for distraction-free mode
+    vim.cmd 'highlight Normal guibg=NONE guifg=#ffffff'
+    vim.cmd 'highlight NormalNC guibg=NONE guifg=#ffffff'
+    vim.cmd 'highlight SignColumn guibg=NONE guifg=#ffffff'
+    vim.cmd 'highlight VertSplit guibg=NONE'
+
+    --[[ 
+-- Uncomment below to restore opaque black background
+-- vim.cmd 'highlight Normal guibg=#000000 guifg=#ffffff'
+-- vim.cmd 'highlight NormalNC guibg=#000000 guifg=#ffffff'
+-- vim.cmd 'highlight SignColumn guibg=#000000 guifg=#ffffff'
+-- vim.cmd 'highlight VertSplit guibg=#000000'
+--]]
 
     local mpv_socket = '/tmp/mpvsocket'
     local function mpv_cmd(tbl)
