@@ -98,11 +98,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 'm', function()
       mpv_cmd { 'script-message', 'chapters/write_chapters' }
     end, 'Write chapters')
-    set('n', ',', 'j', 'Down')
-    set('n', '.', 'k', 'Up')
-    set('n', '<leader>', function()
-      mpv_cmd { 'cycle', 'pause' }
-    end, 'Pause MPV')
 
     vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
       buffer = args.buf,
