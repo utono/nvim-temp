@@ -105,9 +105,9 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       silent = true,
     })
 
-    -- In normal mode, remap <Esc> to move to first non-blank char
+    -- Remap <Esc> in normal mode to clear search and move to first non-blank char
     vim.keymap.set('n', '<Esc>', function()
-      vim.cmd.nohlsearch() -- clear search highlights
+      vim.cmd.nohlsearch()
       local col = vim.fn.col '.'
       local first_nonblank = vim.fn.col '^'
       if col ~= first_nonblank then
@@ -115,12 +115,34 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       end
     end, { buffer = args.buf, desc = 'Clear search & move to ^' })
 
-    -- Automatically move to first non-blank character on mode leave
+    -- Only enable 'hlsearch' during active searching
+    vim.opt_local.hlsearch = false
+
+    vim.api.nvim_create_autocmd('CmdlineEnter', {
+      buffer = args.buf,
+      callback = function()
+        if vim.v.event.cmdtype == '/' or vim.v.event.cmdtype == '?' then
+          vim.opt_local.hlsearch = true
+        end
+      end,
+    })
+
+    vim.api.nvim_create_autocmd('CmdlineLeave', {
+      buffer = args.buf,
+      callback = function()
+        if vim.v.event.cmdtype == '/' or vim.v.event.cmdtype == '?' then
+          vim.defer_fn(function()
+            vim.opt_local.hlsearch = false
+            vim.cmd 'echo' -- Clear the command line area
+          end, 100)
+        end
+      end,
+    })
+    -- Auto-adjust cursor on mode switch to normal
     vim.api.nvim_create_autocmd('ModeChanged', {
       buffer = args.buf,
       group = vim.api.nvim_create_augroup('LiteratureCursorAdjust', { clear = false }),
       callback = function()
-        -- Only act when entering normal mode
         if vim.fn.mode() == 'n' then
           local col = vim.fn.col '.'
           local first_nonblank = vim.fn.col '^'
@@ -140,7 +162,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
     for _, buf in ipairs(buffers) do
       local fname = vim.api.nvim_buf_get_name(buf)
       if fname:find(home .. '/utono/literature/', 1, true) == 1 and fname:sub(-4) == '.txt' then
-        return -- skip Neo-tree auto show
+        return
       end
     end
     require('neo-tree.command').execute { action = 'hide', source = 'filesystem' }
