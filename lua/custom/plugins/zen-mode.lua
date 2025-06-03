@@ -26,7 +26,7 @@ return {
       tmux = { enabled = false },
       kitty = {
         enabled = true,
-        font = '+2', -- default (writing), overridden below if needed
+        font = '+2',
       },
     },
     on_open = function()
@@ -34,9 +34,19 @@ return {
       vim.b._zen_prev_scrolloff = vim.o.scrolloff
       vim.o.scrolloff = math.floor(zen_height / 2)
 
-      -- Determine font size and scrolling behavior based on path or filetype
       local file = vim.api.nvim_buf_get_name(0)
       local filetype = vim.bo.filetype
+
+      if not vim.g.neovide and not vim.g._zen_kitty_default_font_set then
+        vim.g._zen_kitty_default_font_set = true
+        vim.system({ 'kitty', '@', 'get-font-size' }, { text = true }, function(obj)
+          if obj.code == 0 and obj.stdout then
+            vim.schedule(function()
+              vim.g._zen_kitty_font_before = tonumber(vim.trim(obj.stdout)) or 0
+            end)
+          end
+        end)
+      end
 
       if file:find(vim.fn.expand '~/utono/literature/', 1, true) == 1 then
         if not vim.g.neovide then
@@ -49,8 +59,6 @@ return {
         vim.cmd 'hi! link GitSignsAdd Normal'
         vim.cmd 'hi! link GitSignsChange Normal'
         vim.cmd 'hi! link GitSignsDelete Normal'
-
-        -- Enable smooth scroll in Neovide if applicable
         if vim.g.neovide then
           vim.g.neovide_scroll_animation_length = 0.2
           vim.g.neovide_cursor_animation_length = 0
@@ -65,19 +73,23 @@ return {
         vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+2' }
       end
     end,
+
     on_close = function()
       if vim.b._zen_prev_scrolloff then
         vim.o.scrolloff = vim.b._zen_prev_scrolloff
         vim.b._zen_prev_scrolloff = nil
       end
-      if not vim.g.neovide then
-        vim.fn.jobstart { 'kitty', '@', 'set-font-size', '0' }
-      end
+
       if vim.g.neovide then
         vim.g.neovide_scale_factor = 1.0
+      else
+        local font = vim.g._zen_kitty_font_before
+        local restore = font and tostring(font) or '0'
+        vim.fn.jobstart({ 'kitty', '@', 'set-font-size', restore }, { detach = true })
       end
     end,
   },
+
   init = function()
     vim.api.nvim_create_autocmd('FileType', {
       pattern = { 'markdown', 'text' },
@@ -90,54 +102,5 @@ return {
         end)
       end,
     })
-
-    -- ⬇️ Auto-scroll control: toggle, faster, slower
-    local scroll_timer = nil
-    local scrolling = false
-    local scroll_interval = 1000 -- default: 1 second
-
-    vim.keymap.set('n', '<Down>', function()
-      if not vim.g.neovide then
-        print 'Auto-scroll only works in Neovide'
-        return
-      end
-
-      if scrolling then
-        scroll_timer:stop()
-        scroll_timer:close()
-        scroll_timer = nil
-        scrolling = false
-        print 'Auto-scroll stopped'
-      else
-        scroll_timer = vim.loop.new_timer()
-        scroll_timer:start(
-          0,
-          scroll_interval,
-          vim.schedule_wrap(function()
-            if vim.fn.line '.' < vim.fn.line '$' then
-              vim.cmd 'normal! j'
-            else
-              scroll_timer:stop()
-              scroll_timer:close()
-              scroll_timer = nil
-              scrolling = false
-              print 'Reached end of file — auto-scroll stopped'
-            end
-          end)
-        )
-        scrolling = true
-        print('Auto-scroll started (interval: ' .. scroll_interval .. 'ms)')
-      end
-    end, { desc = 'Toggle auto-scroll in Neovide' })
-
-    vim.keymap.set('n', '<Right>', function()
-      scroll_interval = math.max(100, scroll_interval - 200)
-      print('Scroll faster (interval: ' .. scroll_interval .. 'ms)')
-    end, { desc = 'Scroll Faster' })
-
-    vim.keymap.set('n', '<Left>', function()
-      scroll_interval = scroll_interval + 200
-      print('Scroll slower (interval: ' .. scroll_interval .. 'ms)')
-    end, { desc = 'Scroll Slower' })
   end,
 }

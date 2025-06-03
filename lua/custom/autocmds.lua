@@ -101,6 +101,9 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', "'", function()
       mpv_cmd { 'script-message', 'chapters/remove_chapter' }
     end, 'Remove chapter')
+    set('n', 'q', function()
+      mpv_cmd { 'script-message', 'chapters/write_chapters' }
+    end, 'Write chapters')
     set('n', 'm', function()
       mpv_cmd { 'script-message', 'chapters/write_chapters' }
     end, 'Write chapters')

@@ -19,18 +19,19 @@ return {
         lualine_c = {},
         lualine_x = {},
         lualine_y = {},
-        lualine_z = {
-          {
-            'filename',
-            path = 0,
-            color = { fg = '#4b5263', bg = 'none' }, -- darker gray, transparent bg
-            symbols = {
-              modified = ' [+]',
-              readonly = ' [-]',
-              unnamed = '[No Name]',
-            },
-          },
-        },
+        lualine_z = {},
+        -- lualine_z = {
+        --   {
+        --     'filename',
+        --     path = 0,
+        --     color = { fg = '#4b5263', bg = 'none' }, -- darker gray, transparent bg
+        --     symbols = {
+        --       modified = ' [+]',
+        --       readonly = ' [-]',
+        --       unnamed = '[No Name]',
+        --     },
+        --   },
+        -- },
       }
     end
 
