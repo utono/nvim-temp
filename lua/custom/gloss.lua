@@ -7,7 +7,6 @@ M.config = {
   max_width = 120,
   log_filename = 'gloss.md',
   log_dir = vim.fn.expand '~/utono/literature',
-  display_mode = 'float', -- options: 'float', 'split', 'vsplit'
 }
 
 local function wrap_line(line, max_width, prefix)
@@ -32,6 +31,11 @@ local function wrap_line(line, max_width, prefix)
 end
 
 M.gloss_selection = function()
+  local was_zen = require('zen-mode.view').is_open()
+  if was_zen then
+    require('zen-mode').close()
+  end
+
   local start_pos = vim.fn.getpos "'<"
   local end_pos = vim.fn.getpos "'>"
   local lines = vim.fn.getline(start_pos[2], end_pos[2])
@@ -49,9 +53,8 @@ M.gloss_selection = function()
   end
 
   local text = table.concat(lines, '\n')
-  -- Prompt user for optional tag (e.g., "RJ II.2")
-  local tag = vim.fn.expand '%:t' -- e.g., "romeo.txt"
-  local source_file = vim.fn.expand '%:p' -- full path to the file
+  local tag = vim.fn.expand '%:t'
+  local source_file = vim.fn.expand '%:p'
 
   local tmpfile = os.tmpname()
   local f = io.open(tmpfile, 'w')
@@ -59,9 +62,8 @@ M.gloss_selection = function()
   f:close()
 
   local gloss_output = vim.fn.systemlist('python3 ~/.config/nvim/python/gloss_text.py < ' .. tmpfile)
-  -- Log the gloss output to a file
   local log_path = M.config.log_dir .. '/' .. M.config.log_filename
-  vim.fn.mkdir(M.config.log_dir, 'p') -- ensure directory exists
+  vim.fn.mkdir(M.config.log_dir, 'p')
   local log_file = io.open(log_path, 'a')
 
   if log_file then
@@ -86,7 +88,6 @@ M.gloss_selection = function()
   end
   vim.fn.delete(tmpfile)
 
-  -- Format quoted lines only
   local left_pad = string.rep(' ', M.config.left_indent)
   local right_pad = string.rep(' ', M.config.right_margin)
 
@@ -96,59 +97,38 @@ M.gloss_selection = function()
       table.insert(quoted, left_pad .. wrapped .. right_pad)
     end
   end
-
-  -- Add a blank line after quote block
   table.insert(quoted, '')
-
-  -- Append gloss block with no extra padding
   for _, line in ipairs(gloss_output) do
     table.insert(quoted, line)
   end
 
-  local width = math.min(M.config.max_width, vim.o.columns - M.config.right_margin)
-  local height = math.floor(vim.o.lines * 0.6)
-  local row = math.floor((vim.o.lines - height) / 2)
-  local col = math.floor((vim.o.columns - width) / 2)
+  local current_buf = vim.api.nvim_get_current_buf()
 
-  local buf = vim.api.nvim_create_buf(false, true)
+  vim.cmd 'enew'
+  local buf = vim.api.nvim_get_current_buf()
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, quoted)
-
-  local win
-  if M.config.display_mode == 'float' then
-    win = vim.api.nvim_open_win(buf, true, {
-      relative = 'editor',
-      width = width,
-      height = height,
-      row = row,
-      col = col,
-      border = 'rounded',
-      style = 'minimal',
-    })
-  else
-    if M.config.display_mode == 'split' then
-      vim.cmd 'split'
-    elseif M.config.display_mode == 'vsplit' then
-      vim.cmd 'vsplit'
-    end
-    win = vim.api.nvim_get_current_win()
-    vim.api.nvim_win_set_buf(win, buf)
-  end
-
   vim.bo[buf].filetype = 'markdown'
+  vim.bo[buf].buftype = 'nofile'
+  vim.bo[buf].bufhidden = 'wipe'
+  vim.bo[buf].swapfile = false
 
-  -- Word wrap enabled with no hanging indent (just quote prefix)
-  vim.wo[win].wrap = true
-  vim.wo[win].linebreak = true
-  vim.wo[win].breakindent = false
-  vim.wo[win].showbreak = ''
+  vim.wo.wrap = true
+  vim.wo.linebreak = true
+  vim.wo.breakindent = false
+  vim.wo.showbreak = ''
 
-  -- Close keybindings
+  require('zen-mode').open()
+
   vim.keymap.set('n', 'q', function()
-    vim.api.nvim_win_close(0, true)
+    vim.cmd 'bdelete'
+    vim.api.nvim_set_current_buf(current_buf)
+    require('zen-mode').open()
   end, { buffer = buf, nowait = true, silent = true })
 
   vim.keymap.set('n', '<Esc>', function()
-    vim.api.nvim_win_close(0, true)
+    vim.cmd 'bdelete'
+    vim.api.nvim_set_current_buf(current_buf)
+    require('zen-mode').open()
   end, { buffer = buf, nowait = true, silent = true })
 end
 
