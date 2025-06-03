@@ -39,7 +39,9 @@ return {
       local filetype = vim.bo.filetype
 
       if file:find(vim.fn.expand '~/utono/literature/', 1, true) == 1 then
-        vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+4' }
+        if not vim.g.neovide then
+          vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+4' }
+        end
         vim.opt_local.scroll = 1
         vim.opt.guicursor = { 'n-v-c:block' }
         vim.opt_local.cursorline = false
@@ -56,7 +58,9 @@ return {
           vim.g.neovide_scale_factor = 1.2
         end
       elseif filetype == 'markdown' or filetype == 'rst' then
-        vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+2' }
+        if not vim.g.neovide then
+          vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+2' }
+        end
       else
         vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+2' }
       end
@@ -66,7 +70,9 @@ return {
         vim.o.scrolloff = vim.b._zen_prev_scrolloff
         vim.b._zen_prev_scrolloff = nil
       end
-      vim.fn.jobstart { 'kitty', '@', 'set-font-size', '0' }
+      if not vim.g.neovide then
+        vim.fn.jobstart { 'kitty', '@', 'set-font-size', '0' }
+      end
       if vim.g.neovide then
         vim.g.neovide_scale_factor = 1.0
       end
@@ -77,6 +83,9 @@ return {
       pattern = { 'markdown', 'text' },
       callback = function()
         vim.schedule(function()
+          if not vim.g.neovide then
+            return
+          end
           require('zen-mode').toggle()
         end)
       end,
@@ -87,7 +96,7 @@ return {
     local scrolling = false
     local scroll_interval = 1000 -- default: 1 second
 
-    vim.keymap.set('n', 'n', function()
+    vim.keymap.set('n', '<Down>', function()
       if not vim.g.neovide then
         print 'Auto-scroll only works in Neovide'
         return
@@ -121,12 +130,12 @@ return {
       end
     end, { desc = 'Toggle auto-scroll in Neovide' })
 
-    vim.keymap.set('n', 'h', function()
+    vim.keymap.set('n', '<Right>', function()
       scroll_interval = math.max(100, scroll_interval - 200)
       print('Scroll faster (interval: ' .. scroll_interval .. 'ms)')
     end, { desc = 'Scroll Faster' })
 
-    vim.keymap.set('n', 's', function()
+    vim.keymap.set('n', '<Left>', function()
       scroll_interval = scroll_interval + 200
       print('Scroll slower (interval: ' .. scroll_interval .. 'ms)')
     end, { desc = 'Scroll Slower' })
