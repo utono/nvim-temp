@@ -70,15 +70,21 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', '3', function()
       mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
     end, 'Last chapter')
-    set('n', ']', function()
-      mpv_cmd { 'add', 'volume', -2 }
-    end, 'Decrease sound')
-    set('n', '*', function()
-      mpv_cmd { 'add', 'volume', 2 }
-    end, 'Increase sound')
     set('n', '<Tab>', function()
       mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
     end, 'Nudge earlier')
+    set('n', ',', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
+    end, 'Prev chapter')
+    set('n', '<', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
+    end, 'First chapter')
+    set('n', '.', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
+    end, 'Next chapter')
+    set('n', '>', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
+    end, 'Last chapter')
     set('n', 'i', function()
       mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
     end, 'Nudge later')
@@ -107,6 +113,12 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 'm', function()
       mpv_cmd { 'script-message', 'chapters/write_chapters' }
     end, 'Write chapters')
+    set('n', '<Down>', function()
+      mpv_cmd { 'add', 'volume', -2 }
+    end, 'Decrease sound')
+    set('n', '<Up>', function()
+      mpv_cmd { 'add', 'volume', 2 }
+    end, 'Increase sound')
 
     vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
       buffer = args.buf,
