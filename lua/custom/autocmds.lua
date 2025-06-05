@@ -176,23 +176,10 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   end,
 })
 
-vim.api.nvim_create_autocmd('VimEnter', {
-  callback = function()
-    local home = vim.fn.expand '~'
-    local buffers = vim.api.nvim_list_bufs()
-    for _, buf in ipairs(buffers) do
-      local fname = vim.api.nvim_buf_get_name(buf)
-      if fname:find(home .. '/utono/literature/', 1, true) == 1 and fname:sub(-4) == '.txt' then
-        return
-      end
-    end
-    require('neo-tree.command').execute { action = 'hide', source = 'filesystem' }
-  end,
-})
-
+-- Set infinite scrolloff for Markdown files
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   pattern = '*.md',
   callback = function()
-    -- scrolloff will be managed by Zen Mode if active
+    vim.opt_local.scrolloff = 999
   end,
 })

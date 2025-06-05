@@ -106,4 +106,22 @@ vim.keymap.set('n', '<leader>nt', '<cmd>ToggleStatuslineZen<CR>', {
   desc = 'Toggle Lualine Zen Statusline',
 })
 
+vim.api.nvim_create_user_command('ReloadConfig', function()
+  for name, _ in pairs(package.loaded) do
+    if name:match '^custom' or name:match '^kickstart' then
+      package.loaded[name] = nil
+    end
+  end
+
+  dofile(vim.env.MYVIMRC)
+
+  -- Rerun lualine setup manually using the same opts function
+  local lualine_spec = require 'custom.plugins.lualine' -- adjust path if not in custom/plugins
+  require('lualine').setup(lualine_spec.opts())
+
+  vim.notify('Neovim config reloaded!', vim.log.levels.INFO)
+end, {})
+
+vim.keymap.set('n', '<leader>vr', '<cmd>ReloadConfig<CR>', { desc = '[V]im [R]eload config' })
+
 -- vim: ts=2 sts=2 sw=2 et
