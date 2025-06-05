@@ -58,18 +58,7 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', '-', function()
       mpv_cmd { 'add', 'speed', -0.1 }
     end, 'Decrease MPV speed')
-    set('n', '[', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
-    end, 'Prev chapter')
-    set('n', '2', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
-    end, 'First chapter')
-    set('n', '{', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
-    end, 'Next chapter')
-    set('n', '3', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
-    end, 'Last chapter')
+
     set('n', '<Tab>', function()
       mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
     end, 'Nudge earlier')
@@ -85,25 +74,27 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', '>', function()
       mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
     end, 'Last chapter')
-    set('n', 'i', function()
-      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
-    end, 'Nudge later')
     set('n', 'y', function()
       mpv_cmd { 'script-message', 'dynamic_chapter_loop/toggle' }
     end, 'Toggle loop')
+
+    set('n', 'a', function()
+      mpv_cmd { 'cycle', 'pause' }
+    end, 'Toggle pause')
     set('n', 'o', function()
       mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
     end, 'Seek -5s')
     set('n', 'e', function()
       mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
     end, 'Seek +5s')
-    set('n', 'a', function()
-      mpv_cmd { 'cycle', 'pause' }
-    end, 'Toggle pause')
     set('n', 'u', function()
       local line = vim.api.nvim_get_current_line()
       mpv_cmd { 'script-message', 'chapters/add-chapter-b64', base64enc(line) }
     end, 'Add chapter')
+    set('n', 'i', function()
+      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
+    end, 'Nudge later')
+
     set('n', "'", function()
       mpv_cmd { 'script-message', 'chapters/remove_chapter' }
     end, 'Remove chapter')
