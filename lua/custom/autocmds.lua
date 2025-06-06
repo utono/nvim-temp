@@ -59,6 +59,22 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       mpv_cmd { 'add', 'speed', -0.1 }
     end, 'Decrease MPV speed')
 
+    set('n', '[', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
+    end, 'Prev chapter')
+    set('n', '2', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
+    end, 'First chapter')
+    set('n', '{', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
+    end, 'Next chapter')
+    set('n', '3', function()
+      mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
+    end, 'Last chapter')
+    set('n', '&', function()
+      mpv_cmd { 'cycle', 'mute' }
+    end, 'Toggle mute')
+
     set('n', '<Tab>', function()
       mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
     end, 'Nudge earlier')
