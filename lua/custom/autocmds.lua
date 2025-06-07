@@ -100,8 +100,14 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 'o', function()
       mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
     end, 'Seek -5s')
+    set('n', 'O', function()
+      mpv_cmd { 'no-osd', 'seek', -10, 'exact' }
+    end, 'Seek -5s')
     set('n', 'e', function()
       mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
+    end, 'Seek +5s')
+    set('n', 'E', function()
+      mpv_cmd { 'no-osd', 'seek', 10, 'exact' }
     end, 'Seek +5s')
     set('n', 'u', function()
       local line = vim.api.nvim_get_current_line()
