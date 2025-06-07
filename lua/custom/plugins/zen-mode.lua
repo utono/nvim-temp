@@ -72,8 +72,6 @@ return {
           vim.g.neovide_hide_mouse_when_typing = true
           vim.g.neovide_scale_factor = 1.2
         end
-      elseif vim.tbl_contains({ 'markdown', 'rst' }, filetype) then
-        set_kitty_font '+2'
       else
         set_kitty_font '+2'
       end
@@ -81,7 +79,7 @@ return {
 
     on_close = function()
       -- toggle lualine back to full (statusline enabled)
-      vim.cmd 'ToggleStatuslineZen'
+      require('custom.lualine-toggle').toggle()
 
       if vim.b._zen_scrolloff then
         vim.o.scrolloff = vim.b._zen_scrolloff
@@ -102,9 +100,15 @@ return {
     vim.api.nvim_create_autocmd('UIEnter', {
       once = true,
       callback = function()
-        if vim.g.neovide then
-          vim.cmd 'ZenMode'
-        end
+        vim.schedule(function()
+          if not vim.g.neovide then
+            return
+          end
+          local bufname = vim.api.nvim_buf_get_name(0)
+          if bufname:find(vim.fn.expand '~/utono/literature/', 1, true) == 1 then
+            vim.cmd 'ZenMode'
+          end
+        end)
       end,
     })
 

@@ -40,21 +40,4 @@ return {
       sections = full_sections,
     }
   end,
-
-  init = function()
-    -- Create safe interface to toggle Zen statusline
-    vim.api.nvim_create_user_command('ToggleStatuslineZen', function()
-      require('custom.lualine-toggle').toggle()
-    end, {})
-
-    -- Automatically hide statusline on Neovide startup
-    vim.api.nvim_create_autocmd('UIEnter', {
-      once = true,
-      callback = function()
-        if vim.g.neovide then
-          require('custom.lualine-toggle').toggle()
-        end
-      end,
-    })
-  end,
 }

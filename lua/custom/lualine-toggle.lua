@@ -1,4 +1,5 @@
--- File: lua/custom/lualine-toggle.lua
+-- File: ~/.config/nvim/lua/custom/lualine-toggle.lua
+
 local M = {}
 local zen_mode = false
 

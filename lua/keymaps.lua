@@ -102,10 +102,6 @@ vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<C
 
 vim.keymap.set('n', '<leader>nn', '<cmd>ZenMode<CR>', { desc = 'Toggle Zen Mode' })
 
-vim.keymap.set('n', '<leader>nt', '<cmd>ToggleStatuslineZen<CR>', {
-  desc = 'Toggle Lualine Zen Statusline',
-})
-
 vim.api.nvim_create_user_command('ReloadConfig', function()
   for name, _ in pairs(package.loaded) do
     if name:match '^custom' or name:match '^kickstart' then
@@ -116,7 +112,7 @@ vim.api.nvim_create_user_command('ReloadConfig', function()
   dofile(vim.env.MYVIMRC)
 
   -- Rerun lualine setup manually using the same opts function
-  local lualine_spec = require 'custom.plugins.lualine' -- adjust path if not in custom/plugins
+  local lualine_spec = require 'custom.lualine' -- adjust path if not in custom/plugins
   require('lualine').setup(lualine_spec.opts())
 
   vim.notify('Neovim config reloaded!', vim.log.levels.INFO)
