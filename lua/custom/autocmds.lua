@@ -90,6 +90,9 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', '>', function()
       mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
     end, 'Last chapter')
+    set('n', 'p', function()
+      mpv_cmd { 'script-message', 'dynamic_chapter_loop/toggle' }
+    end, 'Toggle loop')
     set('n', 'y', function()
       mpv_cmd { 'script-message', 'dynamic_chapter_loop/toggle' }
     end, 'Toggle loop')
