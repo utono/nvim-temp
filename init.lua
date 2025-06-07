@@ -93,6 +93,11 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
+-- Hide the statusline when running inside Neovide
+if vim.g.neovide then
+  vim.opt.laststatus = 0
+end
+
 -- [[ Setting options ]]
 require 'options'
 
