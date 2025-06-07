@@ -93,9 +93,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 'p', function()
       mpv_cmd { 'script-message', 'dynamic_chapter_loop/toggle' }
     end, 'Toggle loop')
-    set('n', 'y', function()
-      mpv_cmd { 'script-message', 'dynamic_chapter_loop/toggle' }
-    end, 'Toggle loop')
 
     set('n', 'a', function()
       mpv_cmd { 'cycle', 'pause' }
