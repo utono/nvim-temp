@@ -193,3 +193,16 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     vim.opt_local.scrolloff = 999
   end,
 })
+
+-- Clear yank message when in Neovide Zen Mode
+vim.api.nvim_create_autocmd('TextYankPost', {
+  desc = 'Clear yank message in Neovide Zen Mode',
+  group = vim.api.nvim_create_augroup('neovide_zen_clear_yank', { clear = true }),
+  callback = function()
+    if vim.g.neovide and require('zen-mode.view').is_open() then
+      vim.defer_fn(function()
+        vim.cmd 'echo'
+      end, 1000)
+    end
+  end,
+})
