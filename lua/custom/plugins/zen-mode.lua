@@ -70,7 +70,9 @@ return {
           vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+2' }
         end
       else
-        vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+2' }
+        if not vim.g.neovide then
+          vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+2' }
+        end
       end
     end,
 
