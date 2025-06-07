@@ -29,10 +29,19 @@ return {
         font = '+2',
       },
     },
+
     on_open = function()
-      local zen_height = vim.o.lines - vim.o.cmdheight - 2
-      vim.b._zen_prev_scrolloff = vim.o.scrolloff
-      vim.o.scrolloff = math.floor(zen_height / 2)
+      local function set_kitty_font(size)
+        if not vim.g.neovide then
+          vim.fn.jobstart({ 'kitty', '@', 'set-font-size', size }, { detach = true })
+        end
+      end
+
+      -- toggle lualine to minimal (no statusline)
+      require('custom.lualine-toggle').toggle()
+
+      vim.b._zen_scrolloff = vim.o.scrolloff
+      vim.o.scrolloff = math.floor((vim.o.lines - vim.o.cmdheight - 2) / 2)
 
       local file = vim.api.nvim_buf_get_name(0)
       local filetype = vim.bo.filetype
@@ -49,9 +58,7 @@ return {
       end
 
       if file:find(vim.fn.expand '~/utono/literature/', 1, true) == 1 then
-        if not vim.g.neovide then
-          vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+4' }
-        end
+        set_kitty_font '+4'
         vim.opt_local.scroll = 1
         vim.opt.guicursor = { 'n-v-c:block' }
         vim.opt_local.cursorline = false
@@ -65,21 +72,20 @@ return {
           vim.g.neovide_hide_mouse_when_typing = true
           vim.g.neovide_scale_factor = 1.2
         end
-      elseif filetype == 'markdown' or filetype == 'rst' then
-        if not vim.g.neovide then
-          vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+2' }
-        end
+      elseif vim.tbl_contains({ 'markdown', 'rst' }, filetype) then
+        set_kitty_font '+2'
       else
-        if not vim.g.neovide then
-          vim.fn.jobstart { 'kitty', '@', 'set-font-size', '+2' }
-        end
+        set_kitty_font '+2'
       end
     end,
 
     on_close = function()
-      if vim.b._zen_prev_scrolloff then
-        vim.o.scrolloff = vim.b._zen_prev_scrolloff
-        vim.b._zen_prev_scrolloff = nil
+      -- toggle lualine back to full (statusline enabled)
+      vim.cmd 'ToggleStatuslineZen'
+
+      if vim.b._zen_scrolloff then
+        vim.o.scrolloff = vim.b._zen_scrolloff
+        vim.b._zen_scrolloff = nil
       end
 
       if vim.g.neovide then
@@ -93,21 +99,15 @@ return {
   },
 
   init = function()
-    vim.api.nvim_create_autocmd('FileType', {
-      pattern = { 'markdown', 'text' },
+    vim.api.nvim_create_autocmd('UIEnter', {
+      once = true,
       callback = function()
-        vim.schedule(function()
-          if not vim.g.neovide then
-            return
-          end
-          require('zen-mode').toggle()
-        end)
+        if vim.g.neovide then
+          vim.cmd 'ZenMode'
+        end
       end,
     })
 
-    -- Ensure kitty font size is reset when exiting Neovide while still
-    -- in Zen Mode. Without this, quitting Neovide leaves the kitty
-    -- terminal font one step larger.
     vim.api.nvim_create_autocmd('VimLeavePre', {
       callback = function()
         if not vim.g.neovide then
