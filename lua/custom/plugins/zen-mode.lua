@@ -104,5 +104,20 @@ return {
         end)
       end,
     })
+
+    -- Ensure kitty font size is reset when exiting Neovide while still
+    -- in Zen Mode. Without this, quitting Neovide leaves the kitty
+    -- terminal font one step larger.
+    vim.api.nvim_create_autocmd('VimLeavePre', {
+      callback = function()
+        if not vim.g.neovide then
+          return
+        end
+        local ok, view = pcall(require, 'zen-mode.view')
+        if ok and view.is_open() then
+          vim.fn.jobstart({ 'kitty', '@', 'set-font-size', '0' }, { detach = true })
+        end
+      end,
+    })
   end,
 }
