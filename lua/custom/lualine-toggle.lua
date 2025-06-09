@@ -7,7 +7,7 @@ function M.toggle()
   zen_mode = not zen_mode
   require('lualine').setup {
     options = {
-      theme = 'catppuccin',
+      theme = 'auto',
       globalstatus = not zen_mode,
       section_separators = '',
       component_separators = '',

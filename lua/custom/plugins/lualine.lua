@@ -32,7 +32,7 @@ return {
 
     return {
       options = {
-        theme = 'catppuccin',
+        theme = 'auto',
         globalstatus = true,
         section_separators = '',
         component_separators = '',
