@@ -209,3 +209,9 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     end
   end,
 })
+
+vim.api.nvim_create_autocmd('VimEnter', {
+  callback = function()
+    require('custom.colorscheme-selector').load_last()
+  end,
+})
