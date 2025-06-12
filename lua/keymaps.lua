@@ -120,4 +120,8 @@ end, {})
 
 vim.keymap.set('n', '<leader>vr', '<cmd>ReloadConfig<CR>', { desc = '[V]im [R]eload config' })
 
+vim.keymap.set('n', '<leader>ct', function()
+  require('custom.plugins.colorscheme-selector').pick()
+end, { desc = 'Change Neovim colorscheme (Telescope)' })
+
 -- vim: ts=2 sts=2 sw=2 et
