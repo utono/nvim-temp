@@ -13,6 +13,7 @@ local favorites = {
 }
 
 local statefile = vim.fn.stdpath 'state' .. '/last-colorscheme.txt'
+local current_index = nil
 
 local variant_handlers = {
   ['tokyonight-night'] = function()
@@ -35,6 +36,39 @@ end
 
 local installed = vim.tbl_filter(is_installed, favorites)
 
+local function save_scheme(scheme)
+  vim.fn.writefile({ scheme }, statefile)
+end
+
+local function apply_scheme_by_index(index)
+  local scheme = favorites[index]
+  if not scheme then
+    return
+  end
+
+  local handler = variant_handlers[scheme]
+  if handler then
+    handler()
+  else
+    vim.cmd.colorscheme(scheme)
+  end
+
+  save_scheme(scheme)
+  vim.defer_fn(function()
+    vim.notify(string.format('Colorscheme: %s (%d/%d)', scheme, index, #favorites), vim.log.levels.INFO)
+  end, 20)
+end
+
+local function find_current_index()
+  local current = vim.g.colors_name or ''
+  for i, name in ipairs(favorites) do
+    if current == name or current == name:match '^[^%-]+' then
+      return i
+    end
+  end
+  return 1
+end
+
 function M.load_last()
   if vim.fn.filereadable(statefile) == 1 then
     local scheme = vim.fn.readfile(statefile)[1]
@@ -49,13 +83,9 @@ function M.load_last()
   end
 end
 
-local function save_scheme(scheme)
-  vim.fn.writefile({ scheme }, statefile)
-end
-
 function M.pick()
-  local telescope_ok = pcall(require, 'telescope')
-  if not telescope_ok then
+  local ok = pcall(require, 'telescope')
+  if not ok then
     vim.notify('❌ telescope.nvim not found', vim.log.levels.ERROR)
     return
   end
@@ -71,14 +101,18 @@ function M.pick()
       prompt_title = '🎨 Choose Colorscheme',
       finder = finders.new_table { results = installed },
       sorter = conf.generic_sorter {},
-      attach_mappings = function(_, map)
+      attach_mappings = function(prompt_bufnr, map)
         local function apply_and_save()
           local entry = action_state.get_selected_entry()
+          actions.close(prompt_bufnr)
+
           if not entry then
             return
           end
 
           local scheme = entry.value
+          local index = vim.tbl_indexof(favorites, scheme) or 0
+
           local handler = variant_handlers[scheme]
           if handler then
             handler()
@@ -87,8 +121,9 @@ function M.pick()
           end
 
           save_scheme(scheme)
-          -- 🚫 Don't call actions.close()
-          return true -- allow Telescope to close normally
+          vim.defer_fn(function()
+            vim.notify(string.format('Colorscheme: %s (%d/%d)', scheme, index, #favorites), vim.log.levels.INFO)
+          end, 20)
         end
 
         map('i', '<CR>', apply_and_save)
@@ -97,6 +132,18 @@ function M.pick()
       end,
     })
     :find()
+end
+
+function M.cycle()
+  current_index = current_index or find_current_index()
+  current_index = (current_index % #favorites) + 1
+  apply_scheme_by_index(current_index)
+end
+
+function M.cycle_back()
+  current_index = current_index or find_current_index()
+  current_index = ((current_index - 2 + #favorites) % #favorites) + 1
+  apply_scheme_by_index(current_index)
 end
 
 return M

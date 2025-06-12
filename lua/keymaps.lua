@@ -122,6 +122,23 @@ vim.keymap.set('n', '<leader>vr', '<cmd>ReloadConfig<CR>', { desc = '[V]im [R]el
 
 vim.keymap.set('n', '<leader>ct', function()
   require('custom.colorscheme-selector').pick()
-end, { desc = 'Change Neovim colorscheme (Telescope)' })
+end, { desc = '[C]olorscheme [T]oggle picker' })
+
+vim.keymap.set('n', '<leader>cr', function()
+  require('custom.colorscheme-selector').load_last()
+end, { desc = '[C]olorscheme [R]eload last' })
+
+vim.keymap.set('n', '<leader>cf', function()
+  vim.cmd.colorscheme 'habamax'
+  vim.notify('Reset to default colorscheme: habamax', vim.log.levels.INFO)
+end, { desc = '[C]olorscheme [D]efault reset' })
+
+vim.keymap.set('n', '<leader>cc', function()
+  require('custom.colorscheme-selector').cycle()
+end, { desc = '[C]olorscheme cycle →' })
+
+vim.keymap.set('n', '<leader>cb', function()
+  require('custom.colorscheme-selector').cycle_back()
+end, { desc = '[C]olorscheme cycle ←' })
 
 -- vim: ts=2 sts=2 sw=2 et
