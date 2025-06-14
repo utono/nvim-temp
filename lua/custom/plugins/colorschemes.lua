@@ -15,6 +15,27 @@ return {
   },
 
   {
+    'ellisonleao/gruvbox.nvim',
+    priority = 1000,
+    config = function()
+      require('gruvbox').setup {
+        terminal_colors = true,
+        bold = true,
+        italic = {
+          strings = false,
+          emphasis = false,
+          comments = false,
+          operators = false,
+          folds = false,
+        },
+        contrast = 'hard',
+      }
+      -- Uncomment this line if you want to test the colorscheme on load
+      -- vim.cmd.colorscheme 'gruvbox'
+    end,
+  },
+
+  {
     'catppuccin/nvim',
     name = 'catppuccin',
     priority = 1000,
