@@ -5,6 +5,9 @@ return {
   cmd = 'ZenMode',
   opts = {
     window = {
+      -- backdrop = 0.75,
+      -- backdrop = 0.95,
+      backdrop = 1,
       width = 90,
       options = {
         signcolumn = 'no',
@@ -21,6 +24,7 @@ return {
         enabled = true,
         ruler = false,
         showcmd = false,
+        laststatus = 0, -- turn off the statusline is zen mode
       },
       gitsigns = { enabled = false },
       tmux = { enabled = false },

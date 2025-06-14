@@ -143,4 +143,7 @@ vim.keymap.set('n', '<leader>cb', function()
   require('custom.colorscheme-selector').cycle_back()
 end, { desc = '[C]olorscheme cycle ←' })
 
+-- Toggle Twilight dimming
+vim.keymap.set('n', '<leader>tt', '<cmd>Twilight<CR>', { desc = '[T]oggle [T]wilight' })
+
 -- vim: ts=2 sts=2 sw=2 et
