@@ -7,9 +7,12 @@ local favorites = {
   'gruvbox-material',
   'catppuccin-mocha',
   'rose-pine',
-  'kanagawa',
+  'kanagawa-wave',
   'everforest',
   'monokai-pro',
+  'nord',
+  'nightfox',
+  'github_dark_default',
 }
 
 local statefile = vim.fn.stdpath 'state' .. '/last-colorscheme.txt'

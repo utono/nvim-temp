@@ -129,8 +129,10 @@ vim.keymap.set('n', '<leader>cr', function()
 end, { desc = '[C]olorscheme [R]eload last' })
 
 vim.keymap.set('n', '<leader>cf', function()
-  vim.cmd.colorscheme 'habamax'
-  vim.notify('Reset to default colorscheme: habamax', vim.log.levels.INFO)
+  -- vim.cmd.colorscheme 'gruvbox-material'
+  vim.cmd.colorscheme 'rose-pine'
+  -- vim.notify('Reset to default colorscheme: gruvbox-material', vim.log.levels.INFO)
+  vim.notify('Reset to default colorscheme: rose-pine', vim.log.levels.INFO)
 end, { desc = '[C]olorscheme [D]efault reset' })
 
 vim.keymap.set('n', '<leader>cc', function()

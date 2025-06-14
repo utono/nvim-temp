@@ -73,4 +73,59 @@ return {
       }
     end,
   },
+
+  -- Additional popular themes
+
+  {
+    'folke/tokyonight.nvim',
+    priority = 1000,
+    config = function()
+      require('tokyonight').setup {
+        style = 'night',
+        transparent = false,
+      }
+    end,
+  },
+
+  {
+    'shaunsingh/nord.nvim',
+    priority = 1000,
+    config = function()
+      vim.g.nord_contrast = true
+      vim.g.nord_borders = true
+      vim.cmd.colorscheme 'nord'
+    end,
+  },
+
+  {
+    'EdenEast/nightfox.nvim',
+    priority = 1000,
+    config = function()
+      require('nightfox').setup {
+        options = {
+          transparent = false,
+          styles = {
+            comments = 'italic',
+            keywords = 'bold',
+          },
+        },
+      }
+    end,
+  },
+
+  {
+    'projekt0n/github-nvim-theme',
+    priority = 1000,
+    config = function()
+      require('github-theme').setup {
+        options = {
+          styles = {
+            floats = 'dark',
+            sidebars = 'dark',
+          },
+        },
+      }
+      vim.cmd.colorscheme 'github_dark_default'
+    end,
+  },
 }
