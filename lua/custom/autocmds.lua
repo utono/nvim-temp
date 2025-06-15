@@ -58,7 +58,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', '-', function()
       mpv_cmd { 'add', 'speed', -0.1 }
     end, 'Decrease MPV speed')
-
     set('n', '[', function()
       mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
     end, 'Prev chapter')
@@ -74,7 +73,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', '&', function()
       mpv_cmd { 'cycle', 'mute' }
     end, 'Toggle mute')
-
     set('n', '<Tab>', function()
       mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
     end, 'Nudge earlier')
@@ -93,7 +91,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 'p', function()
       mpv_cmd { 'script-message', 'dynamic_chapter_loop/toggle' }
     end, 'Toggle loop')
-
     set('n', 'a', function()
       mpv_cmd { 'cycle', 'pause' }
     end, 'Toggle pause')
@@ -102,13 +99,13 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     end, 'Seek -5s')
     set('n', 'O', function()
       mpv_cmd { 'no-osd', 'seek', -10, 'exact' }
-    end, 'Seek -5s')
+    end, 'Seek -10s')
     set('n', 'e', function()
       mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
     end, 'Seek +5s')
     set('n', 'E', function()
       mpv_cmd { 'no-osd', 'seek', 10, 'exact' }
-    end, 'Seek +5s')
+    end, 'Seek +10s')
     set('n', 'u', function()
       local line = vim.api.nvim_get_current_line()
       mpv_cmd { 'script-message', 'chapters/add-chapter-b64', base64enc(line) }
@@ -116,7 +113,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 'i', function()
       mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
     end, 'Nudge later')
-
     set('n', "'", function()
       mpv_cmd { 'script-message', 'chapters/remove_chapter' }
     end, 'Remove chapter')
@@ -139,7 +135,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       silent = true,
     })
 
-    -- Remap <Esc> in normal mode to clear search and move to first non-blank char
     vim.keymap.set('n', '<Esc>', function()
       vim.cmd.nohlsearch()
       local col = vim.fn.col '.'
@@ -149,7 +144,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       end
     end, { buffer = args.buf, desc = 'Clear search & move to ^' })
 
-    -- Only enable 'hlsearch' during active searching
     vim.opt_local.hlsearch = false
 
     vim.api.nvim_create_autocmd('CmdlineEnter', {
@@ -167,12 +161,12 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         if vim.v.event.cmdtype == '/' or vim.v.event.cmdtype == '?' then
           vim.defer_fn(function()
             vim.opt_local.hlsearch = false
-            vim.cmd 'echo' -- Clear the command line area
+            vim.cmd 'echo'
           end, 100)
         end
       end,
     })
-    -- Auto-adjust cursor on mode switch to normal
+
     vim.api.nvim_create_autocmd('ModeChanged', {
       buffer = args.buf,
       group = vim.api.nvim_create_augroup('LiteratureCursorAdjust', { clear = false }),
@@ -189,7 +183,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   end,
 })
 
--- Set infinite scrolloff for Markdown files
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   pattern = '*.md',
   callback = function()
@@ -197,7 +190,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   end,
 })
 
--- Clear yank message when in Neovide Zen Mode
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Clear yank message in Neovide Zen Mode',
   group = vim.api.nvim_create_augroup('neovide_zen_clear_yank', { clear = true }),
@@ -213,5 +205,13 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.api.nvim_create_autocmd('VimEnter', {
   callback = function()
     require('custom.colorscheme-selector').load_last()
+  end,
+})
+
+vim.api.nvim_create_autocmd('VimEnter', {
+  callback = function()
+    if vim.g.neovide then
+      vim.g.neovide_opacity = 1.0
+    end
   end,
 })
