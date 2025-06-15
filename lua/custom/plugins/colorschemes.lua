@@ -53,38 +53,6 @@ return {
   },
 
   {
-    'neanias/everforest-nvim',
-    version = false,
-    priority = 1000,
-    config = function()
-      require('everforest').setup {
-        background = 'hard',
-        transparent_background_level = 0,
-      }
-    end,
-  },
-
-  {
-    'rebelot/kanagawa.nvim',
-    priority = 1000,
-    config = function()
-      require('kanagawa').setup {
-        background = {
-          dark = 'wave',
-        },
-      }
-    end,
-  },
-
-  {
-    'loctvl842/monokai-pro.nvim',
-    priority = 1000,
-    config = function()
-      require('monokai-pro').setup()
-    end,
-  },
-
-  {
     'rose-pine/neovim',
     name = 'rose-pine',
     priority = 1000,
@@ -105,48 +73,6 @@ return {
         style = 'night',
         transparent = false,
       }
-    end,
-  },
-
-  {
-    'shaunsingh/nord.nvim',
-    priority = 1000,
-    config = function()
-      vim.g.nord_contrast = true
-      vim.g.nord_borders = true
-      vim.cmd.colorscheme 'nord'
-    end,
-  },
-
-  {
-    'EdenEast/nightfox.nvim',
-    priority = 1000,
-    config = function()
-      require('nightfox').setup {
-        options = {
-          transparent = false,
-          styles = {
-            comments = 'italic',
-            keywords = 'bold',
-          },
-        },
-      }
-    end,
-  },
-
-  {
-    'projekt0n/github-nvim-theme',
-    priority = 1000,
-    config = function()
-      require('github-theme').setup {
-        options = {
-          styles = {
-            floats = 'dark',
-            sidebars = 'dark',
-          },
-        },
-      }
-      vim.cmd.colorscheme 'github_dark_default'
     end,
   },
 }
