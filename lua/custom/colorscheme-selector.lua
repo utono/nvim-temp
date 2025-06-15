@@ -3,16 +3,11 @@
 local M = {}
 
 local favorites = {
-  'tokyonight-night',
   'gruvbox-material',
+  'gruvbox',
   'catppuccin-mocha',
+  'tokyonight-night',
   'rose-pine',
-  'kanagawa-wave',
-  'everforest',
-  'monokai-pro',
-  'nord',
-  'nightfox',
-  'github_dark_default',
 }
 
 local statefile = vim.fn.stdpath 'state' .. '/last-colorscheme.txt'
