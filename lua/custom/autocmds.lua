@@ -110,13 +110,13 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       mpv_cmd { 'cycle', 'pause' }
     end, 'Toggle pause')
     set('n', 'o', function()
-      mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
+      mpv_cmd { 'no-osd', 'seek', -3, 'exact' }
     end, 'Seek -5s')
     set('n', 'O', function()
       mpv_cmd { 'no-osd', 'seek', -10, 'exact' }
     end, 'Seek -10s')
     set('n', 'e', function()
-      mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
+      mpv_cmd { 'no-osd', 'seek', 3, 'exact' }
     end, 'Seek +5s')
     set('n', 'E', function()
       mpv_cmd { 'no-osd', 'seek', 10, 'exact' }
@@ -136,13 +136,13 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       mpv_cmd { 'script-message', 'chapters/add-chapter-b64', base64enc(line) }
     end, 'Add chapter')
     set('n', 't', function()
-      mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
+      mpv_cmd { 'no-osd', 'seek', 3, 'exact' }
     end, 'Seek +5s')
     set('n', 'T', function()
       mpv_cmd { 'no-osd', 'seek', 10, 'exact' }
     end, 'Seek +10s')
     set('n', 'n', function()
-      mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
+      mpv_cmd { 'no-osd', 'seek', -3, 'exact' }
     end, 'Seek -5s')
     set('n', 'N', function()
       mpv_cmd { 'no-osd', 'seek', -10, 'exact' }
