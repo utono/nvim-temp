@@ -1,34 +1,10 @@
 -- ~/.config/nvim/lua/custom/autocmds.lua
 --
 -- [[ Custom Autocommands for .txt files in ~/utono/literature/ ]]
--- Integrates MPV controls, disables global UI distractions, and assumes
--- Zen Mode handles visual presentation.
--- Keymaps are grouped and ordered to match physical real_prog_dvorak layout
+-- Integrates MPV controls via mpv-control plugin, disables distractions.
 
-local home = os.getenv 'HOME'
-
-local function get_mpv_socket()
-  local handle = io.popen 'ls /tmp/mpvsocket-* 2>/dev/null'
-  if not handle then
-    return nil
-  end
-  for socket_path in handle:read('*a'):gmatch '[^\n]+' do
-    local cmd = string.format([[echo '{"command":["get_property","path"]}' | socat - UNIX-CONNECT:%s]], socket_path)
-    local out = io.popen(cmd)
-    if out then
-      local result = out:read '*a'
-      out:close()
-      if result and result:match '%S' then
-        local decoded = vim.fn.json_decode(result)
-        local path = decoded and decoded.data
-        if path and (path:find(home .. '/Music') or path:find(home .. '/rips')) then
-          return socket_path
-        end
-      end
-    end
-  end
-  return nil
-end
+local mpv = require 'custom.mpv-control'
+local home = vim.env.HOME
 
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   pattern = '*.txt',
@@ -41,7 +17,7 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       return
     end
 
-    local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    local b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
     local function base64enc(data)
       return (
         (data:gsub('.', function(x)
@@ -58,110 +34,98 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
           for i = 1, 6 do
             c = c + (x:sub(i, i) == '1' and 2 ^ (6 - i) or 0)
           end
-          return b:sub(c + 1, c + 1)
+          return b64:sub(c + 1, c + 1)
         end) .. ({ '', '==', '=' })[#data % 3 + 1]
       )
-    end
-
-    local function mpv_cmd(tbl)
-      local socket = get_mpv_socket()
-      if not socket then
-        vim.notify('MPV socket not found for ~/Music or ~/rips', vim.log.levels.WARN)
-        return
-      end
-      local json = vim.fn.json_encode { command = tbl }
-      vim.fn.jobstart { 'sh', '-c', string.format("echo '%s' | socat - UNIX-CONNECT:%s", json, socket) }
     end
 
     local set = function(mode, lhs, rhs, desc)
       vim.keymap.set(mode, lhs, rhs, { buffer = args.buf, desc = desc })
     end
 
-    -- Chapter, seek, pause, and volume keymaps
     set('n', '+', function()
-      mpv_cmd { 'add', 'speed', 0.1 }
+      mpv.send { 'add', 'speed', 0.1 }
     end, 'Increase speed')
     set('n', '-', function()
-      mpv_cmd { 'add', 'speed', -0.1 }
+      mpv.send { 'add', 'speed', -0.1 }
     end, 'Decrease speed')
     set('n', '[', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
-    end, 'Previous chapter')
+      mpv.send { 'script-message', 'chapter_controls/jump_previous_chapter' }
+    end, 'Prev chapter')
     set('n', '2', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
+      mpv.send { 'script-message', 'chapter_controls/jump_first_chapter' }
     end, 'First chapter')
     set('n', '{', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
+      mpv.send { 'script-message', 'chapter_controls/jump_next_chapter' }
     end, 'Next chapter')
     set('n', '3', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
+      mpv.send { 'script-message', 'chapter_controls/jump_last_chapter' }
     end, 'Last chapter')
     set('n', '&', function()
-      mpv_cmd { 'cycle', 'mute' }
+      mpv.send { 'cycle', 'mute' }
     end, 'Toggle mute')
     set('n', '<Tab>', function()
-      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
+      mpv.send { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
     end, 'Nudge earlier')
     set('n', ',', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_previous_chapter' }
+      mpv.send { 'script-message', 'chapter_controls/jump_previous_chapter' }
     end, 'Previous chapter')
     set('n', '<', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_first_chapter' }
+      mpv.send { 'script-message', 'chapter_controls/jump_first_chapter' }
     end, 'First chapter')
     set('n', '.', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_next_chapter' }
+      mpv.send { 'script-message', 'chapter_controls/jump_next_chapter' }
     end, 'Next chapter')
     set('n', '>', function()
-      mpv_cmd { 'script-message', 'chapter_controls/jump_last_chapter' }
+      mpv.send { 'script-message', 'chapter_controls/jump_last_chapter' }
     end, 'Last chapter')
     set('n', 'p', function()
-      mpv_cmd { 'script-message', 'dynamic_chapter_loop/toggle' }
+      mpv.send { 'script-message', 'dynamic_chapter_loop/toggle' }
     end, 'Toggle loop')
     set('n', 'a', function()
-      mpv_cmd { 'cycle', 'pause' }
+      mpv.send { 'cycle', 'pause' }
     end, 'Toggle pause')
     set('n', 'o', function()
-      mpv_cmd { 'no-osd', 'seek', -5, 'exact' }
+      mpv.send { 'no-osd', 'seek', -5, 'exact' }
     end, 'Seek -5s')
     set('n', 'O', function()
-      mpv_cmd { 'no-osd', 'seek', -10, 'exact' }
+      mpv.send { 'no-osd', 'seek', -10, 'exact' }
     end, 'Seek -10s')
     set('n', 'e', function()
-      mpv_cmd { 'no-osd', 'seek', 5, 'exact' }
+      mpv.send { 'no-osd', 'seek', 5, 'exact' }
     end, 'Seek +5s')
     set('n', 'E', function()
-      mpv_cmd { 'no-osd', 'seek', 10, 'exact' }
+      mpv.send { 'no-osd', 'seek', 10, 'exact' }
     end, 'Seek +10s')
     set('n', 'u', function()
-      mpv_cmd { 'script-message', 'chapters/add-chapter-b64', base64enc(vim.api.nvim_get_current_line()) }
+      local line = vim.api.nvim_get_current_line()
+      mpv.send { 'script-message', 'chapters/add-chapter-b64', base64enc(line) }
     end, 'Add chapter')
     set('n', 'i', function()
-      mpv_cmd { 'script-message', 'chapter_controls/nudge_chapter_later' }
+      mpv.send { 'script-message', 'chapter_controls/nudge_chapter_later' }
     end, 'Nudge later')
     set('n', "'", function()
-      mpv_cmd { 'script-message', 'chapters/remove_chapter' }
+      mpv.send { 'script-message', 'chapters/remove_chapter' }
     end, 'Remove chapter')
     set('n', 'q', function()
-      mpv_cmd { 'script-message', 'chapters/write_chapters' }
+      mpv.send { 'script-message', 'chapters/write_chapters' }
     end, 'Write chapters')
     set('n', 'm', function()
-      mpv_cmd { 'script-message', 'chapters/write_chapters' }
+      mpv.send { 'script-message', 'chapters/write_chapters' }
     end, 'Write chapters')
     set('n', '<Down>', function()
-      mpv_cmd { 'add', 'volume', -2 }
+      mpv.send { 'add', 'volume', -2 }
     end, 'Volume down')
     set('n', '<Up>', function()
-      mpv_cmd { 'add', 'volume', 2 }
+      mpv.send { 'add', 'volume', 2 }
     end, 'Volume up')
 
-    -- Shakespeare gloss keybind
     vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
       buffer = args.buf,
       desc = 'Gloss selected Shakespeare text (Arden style)',
       silent = true,
     })
 
-    -- Clear search highlight with <Esc>
     vim.keymap.set('n', '<Esc>', function()
       vim.cmd.nohlsearch()
       local col = vim.fn.col '.'
@@ -171,7 +135,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       end
     end, { buffer = args.buf, desc = 'Clear search & move to ^' })
 
-    -- Smart hlsearch only while searching
     vim.opt_local.hlsearch = false
     vim.api.nvim_create_autocmd('CmdlineEnter', {
       buffer = args.buf,
@@ -181,6 +144,7 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         end
       end,
     })
+
     vim.api.nvim_create_autocmd('CmdlineLeave', {
       buffer = args.buf,
       callback = function()
