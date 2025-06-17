@@ -9,8 +9,8 @@ return {
       -- backdrop = 0.95,
       backdrop = 1,
       -- width = 90,
-      width = 0.5,
-      height = 0.9,
+      width = 0.55,
+      height = 0.95,
       options = {
         signcolumn = 'no',
         number = false,

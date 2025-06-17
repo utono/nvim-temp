@@ -159,12 +159,18 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     -- Remap w to move down (j) and m to move up (k)
     set('n', 'm', 'k', 'Remap m to k')
     set('n', 'w', 'j', 'Remap w to j')
-    set('n', '<Down>', function()
+    set('n', 'v', function()
       mpv_cmd { 'add', 'volume', -2 }
     end, 'Decrease sound')
-    set('n', '<Up>', function()
+    set('n', 'z', function()
       mpv_cmd { 'add', 'volume', 2 }
     end, 'Increase sound')
+    -- set('n', '<Down>', function()
+    --   mpv_cmd { 'add', 'volume', -2 }
+    -- end, 'Decrease sound')
+    -- set('n', '<Up>', function()
+    --   mpv_cmd { 'add', 'volume', 2 }
+    -- end, 'Increase sound')
 
     vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
       buffer = args.buf,
