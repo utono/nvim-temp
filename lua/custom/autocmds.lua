@@ -64,7 +64,22 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', '&', function()
       mpv.send { 'cycle', 'mute' }
     end, 'Toggle mute')
+    set('n', ']', function()
+      mpv.send { 'script-message', 'chapter_controls/jump_previous_chapter' }
+    end, 'Prev chapter')
+    set('n', '9', function()
+      mpv.send { 'script-message', 'chapter_controls/jump_first_chapter' }
+    end, 'First chapter')
+    set('n', '}', function()
+      mpv.send { 'script-message', 'chapter_controls/jump_next_chapter' }
+    end, 'Next chapter')
+    set('n', '8', function()
+      mpv.send { 'script-message', 'chapter_controls/jump_last_chapter' }
+    end, 'Last chapter')
     set('n', '<Tab>', function()
+      mpv.send { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
+    end, 'Nudge earlier')
+    set('n', '\\', function()
       mpv.send { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
     end, 'Nudge earlier')
     set('n', ',', function()
@@ -104,21 +119,42 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 'i', function()
       mpv.send { 'script-message', 'chapter_controls/nudge_chapter_later' }
     end, 'Nudge later')
+    set('n', 'd', function()
+      mpv.send { 'script-message', 'chapter_controls/nudge_chapter_later' }
+    end, 'Nudge later')
+    set('n', 'h', function()
+      local line = vim.api.nvim_get_current_line()
+      mpv.send { 'script-message', 'chapters/add-chapter-b64', base64enc(line) }
+    end, 'Add chapter')
+    set('n', 't', function()
+      mpv.send { 'no-osd', 'seek', 5, 'exact' }
+    end, 'Seek +5s')
+    set('n', 'T', function()
+      mpv.send { 'no-osd', 'seek', 10, 'exact' }
+    end, 'Seek +10s')
+    set('n', 'n', function()
+      mpv.send { 'no-osd', 'seek', -5, 'exact' }
+    end, 'Seek -5s')
+    set('n', 'N', function()
+      mpv.send { 'no-osd', 'seek', -10, 'exact' }
+    end, 'Seek -10s')
+    set('n', 's', function()
+      mpv.send { 'cycle', 'pause' }
+    end, 'Toggle pause')
     set('n', "'", function()
       mpv.send { 'script-message', 'chapters/remove_chapter' }
     end, 'Remove chapter')
     set('n', 'q', function()
       mpv.send { 'script-message', 'chapters/write_chapters' }
     end, 'Write chapters')
-    set('n', 'm', function()
+    set('n', 'm', 'k', 'Move cursor up')
+    set('n', 'w', 'j', 'Move cursor down')
+    set('n', 'v', function()
       mpv.send { 'script-message', 'chapters/write_chapters' }
     end, 'Write chapters')
-    set('n', '<Down>', function()
-      mpv.send { 'add', 'volume', -2 }
-    end, 'Volume down')
-    set('n', '<Up>', function()
-      mpv.send { 'add', 'volume', 2 }
-    end, 'Volume up')
+    set('n', 'z', function()
+      mpv.send { 'script-message', 'chapters/remove_chapter' }
+    end, 'Remove chapter')
 
     vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
       buffer = args.buf,
@@ -170,13 +206,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         end
       end,
     })
-  end,
-})
-
-vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
-  pattern = '*.md',
-  callback = function()
-    vim.opt_local.scrolloff = 999
   end,
 })
 

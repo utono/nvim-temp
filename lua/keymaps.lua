@@ -93,8 +93,6 @@ vim.keymap.set('n', '<leader>md', function()
   end
 end, { noremap = true, silent = true })
 
-vim.keymap.set('i', 'ht', '<Esc>', { desc = 'Exit insert mode' })
-
 vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
   desc = 'Gloss selected Shakespeare text (Arden style)',
   silent = true,

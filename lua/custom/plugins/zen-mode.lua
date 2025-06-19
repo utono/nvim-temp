@@ -9,7 +9,7 @@ return {
       -- backdrop = 0.95,
       backdrop = 1,
       -- width = 90,
-      width = 0.55,
+      width = 0.8,
       height = 0.95,
       options = {
         signcolumn = 'no',
