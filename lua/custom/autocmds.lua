@@ -101,8 +101,14 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     --   mpv.send { 'script-message', 'chapter_controls/jump_last_chapter' }
     -- end, 'Last chapter')
     set('n', 'p', function()
+      mpv.send { 'script-message', 'chapters/write_chapters' }
+    end, 'Write chapters')
+    set('n', 'f', function()
       mpv.send { 'script-message', 'dynamic_chapter_loop/toggle' }
     end, 'Toggle loop')
+    set('n', 'g', function()
+      mpv.send { 'script-message', 'chapters/write_chapters' }
+    end, 'Write chapters')
     set('n', 'c', function()
       mpv.send { 'script-message', 'loop_duration/toggle' }
     end, 'loopduration toggle')
@@ -156,9 +162,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', "'", function()
       mpv.send { 'script-message', 'chapters/remove_chapter' }
     end, 'Remove chapter')
-    set('n', 'q', function()
-      mpv.send { 'script-message', 'chapters/write_chapters' }
-    end, 'Write chapters')
     set('n', 'm', 'k', 'Move cursor up')
     set('n', 'w', 'j', 'Move cursor down')
     -- set('n', 'v', function()
