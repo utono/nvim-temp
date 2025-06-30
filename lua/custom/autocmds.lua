@@ -83,20 +83,32 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       mpv.send { 'script-message', 'chapter_controls/nudge_chapter_earlier' }
     end, 'Nudge earlier')
     set('n', ',', function()
-      mpv.send { 'script-message', 'chapter_controls/jump_previous_chapter' }
-    end, 'Previous chapter')
+      mpv.send { 'script-message', 'loop_duration/shift' }
+    end, 'loopduration toggle')
     set('n', '<', function()
-      mpv.send { 'script-message', 'chapter_controls/jump_first_chapter' }
-    end, 'First chapter')
-    set('n', '.', function()
-      mpv.send { 'script-message', 'chapter_controls/jump_next_chapter' }
-    end, 'Next chapter')
-    set('n', '>', function()
-      mpv.send { 'script-message', 'chapter_controls/jump_last_chapter' }
-    end, 'Last chapter')
+      mpv.send { 'script-message', 'loop_duration/toggle' }
+    end, 'loopduration toggle')
+    -- set('n', ',', function()
+    --   mpv.send { 'script-message', 'chapter_controls/jump_previous_chapter' }
+    -- end, 'Previous chapter')
+    -- set('n', '<', function()
+    --   mpv.send { 'script-message', 'chapter_controls/jump_first_chapter' }
+    -- end, 'First chapter')
+    -- set('n', '.', function()
+    --   mpv.send { 'script-message', 'chapter_controls/jump_next_chapter' }
+    -- end, 'Next chapter')
+    -- set('n', '>', function()
+    --   mpv.send { 'script-message', 'chapter_controls/jump_last_chapter' }
+    -- end, 'Last chapter')
     set('n', 'p', function()
       mpv.send { 'script-message', 'dynamic_chapter_loop/toggle' }
     end, 'Toggle loop')
+    set('n', 'c', function()
+      mpv.send { 'script-message', 'loop_duration/toggle' }
+    end, 'loopduration toggle')
+    set('n', 'r', function()
+      mpv.send { 'script-message', 'loop_duration/shift' }
+    end, 'loopduration toggle')
     set('n', 'a', function()
       mpv.send { 'cycle', 'pause' }
     end, 'Toggle pause')
@@ -149,12 +161,12 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     end, 'Write chapters')
     set('n', 'm', 'k', 'Move cursor up')
     set('n', 'w', 'j', 'Move cursor down')
-    set('n', 'v', function()
-      mpv.send { 'script-message', 'chapters/write_chapters' }
-    end, 'Write chapters')
-    set('n', 'z', function()
-      mpv.send { 'script-message', 'chapters/remove_chapter' }
-    end, 'Remove chapter')
+    -- set('n', 'v', function()
+    --   mpv.send { 'script-message', 'chapters/write_chapters' }
+    -- end, 'Write chapters')
+    -- set('n', 'z', function()
+    --   mpv.send { 'script-message', 'chapters/remove_chapter' }
+    -- end, 'Remove chapter')
 
     vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
       buffer = args.buf,
