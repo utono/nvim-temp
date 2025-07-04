@@ -106,9 +106,9 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 'f', function()
       mpv.send { 'script-message', 'dynamic_chapter_loop/toggle' }
     end, 'Toggle loop')
-    set('n', 'g', function()
-      mpv.send { 'script-message', 'chapters/write_chapters' }
-    end, 'Write chapters')
+    -- set('n', 'g', function()
+    --   mpv.send { 'script-message', 'chapters/write_chapters' }
+    -- end, 'Write chapters')
     set('n', 'c', function()
       mpv.send { 'script-message', 'loop_duration/toggle' }
     end, 'loopduration toggle')
@@ -164,6 +164,9 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     end, 'Remove chapter')
     set('n', 'm', 'k', 'Move cursor up')
     set('n', 'w', 'j', 'Move cursor down')
+    set('n', '<Down>', ':cnext<CR>', 'Next quickfix (Zen Mode)')
+    set('n', '<Up>', ':cprevious<CR>', 'Previous quickfix (Zen Mode)')
+
     -- set('n', 'v', function()
     --   mpv.send { 'script-message', 'chapters/write_chapters' }
     -- end, 'Write chapters')
@@ -232,6 +235,36 @@ vim.api.nvim_create_autocmd('TextYankPost', {
       vim.defer_fn(function()
         vim.cmd 'echo'
       end, 1000)
+    end
+  end,
+})
+
+local previous_colorscheme
+
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'ZenModeEnter',
+  callback = function()
+    if not vim.g.neovide then
+      return
+    end
+
+    local file = vim.api.nvim_buf_get_name(0)
+    if file:find('^' .. vim.fn.expand '~/utono/literature/') then
+      previous_colorscheme = vim.g.colors_name
+      vim.cmd.colorscheme 'gruvbox-material'
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'ZenModeLeave',
+  callback = function()
+    if not vim.g.neovide then
+      return
+    end
+
+    if previous_colorscheme then
+      vim.cmd.colorscheme(previous_colorscheme)
     end
   end,
 })
