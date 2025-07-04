@@ -144,4 +144,36 @@ end, { desc = '[C]olorscheme cycle ←' })
 -- Toggle Twilight dimming
 vim.keymap.set('n', '<leader>tt', '<cmd>Twilight<CR>', { desc = '[T]oggle [T]wilight' })
 
+-- Close the quickfix window without clearing the quickfix list
+vim.keymap.set('n', '<leader>cq', ':cclose<CR>', { desc = 'Close Quickfix Window' })
+
+-- Custom quickfix navigation: jump to quickfix entry but keep cursor on line start
+local function jump_qf_entry(direction)
+  return function()
+    -- Save current qf entry info
+    local qf = vim.fn.getqflist { idx = 0, items = 0 }
+    local items = qf.items
+    local idx = qf.idx + (direction == 'next' and 1 or -1)
+
+    if idx < 1 or idx > #items then
+      vim.notify('No more quickfix entries', vim.log.levels.INFO)
+      return
+    end
+
+    local item = items[idx]
+    local filepath = vim.fn.fnamemodify(item.filename or '', ':p')
+
+    -- Jump to quickfix entry
+    vim.cmd(direction == 'next' and 'cnext' or 'cprevious')
+
+    -- Move to first non-blank character only for ~/utono/literature/*
+    if filepath:find(vim.fn.expand '~/utono/literature') == 1 then
+      vim.cmd 'normal! ^'
+    end
+  end
+end
+
+vim.keymap.set('n', ']q', jump_qf_entry 'next', { desc = 'Next quickfix (custom)' })
+vim.keymap.set('n', '[q', jump_qf_entry 'prev', { desc = 'Previous quickfix (custom)' })
+
 -- vim: ts=2 sts=2 sw=2 et
