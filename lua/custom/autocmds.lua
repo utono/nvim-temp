@@ -43,12 +43,22 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       vim.keymap.set(mode, lhs, rhs, { buffer = args.buf, desc = desc })
     end
 
+    if vim.g.neovide then
+      set('n', 'n', 'n', 'Search forward')
+    end
+
     set('n', '+', function()
       mpv.send { 'add', 'speed', 0.1 }
     end, 'Increase speed')
     set('n', '-', function()
       mpv.send { 'add', 'speed', -0.1 }
     end, 'Decrease speed')
+    set('n', '<Right>', function()
+      mpv.send { 'add', 'volume', 5 }
+    end, 'Increase volume')
+    set('n', '<Left>', function()
+      mpv.send { 'add', 'volume', -5 }
+    end, 'Decrease volume')
     set('n', '[', function()
       mpv.send { 'script-message', 'chapter_controls/jump_previous_chapter' }
     end, 'Prev chapter')
@@ -88,27 +98,12 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', '<', function()
       mpv.send { 'script-message', 'loop_duration/toggle' }
     end, 'loopduration toggle')
-    -- set('n', ',', function()
-    --   mpv.send { 'script-message', 'chapter_controls/jump_previous_chapter' }
-    -- end, 'Previous chapter')
-    -- set('n', '<', function()
-    --   mpv.send { 'script-message', 'chapter_controls/jump_first_chapter' }
-    -- end, 'First chapter')
-    -- set('n', '.', function()
-    --   mpv.send { 'script-message', 'chapter_controls/jump_next_chapter' }
-    -- end, 'Next chapter')
-    -- set('n', '>', function()
-    --   mpv.send { 'script-message', 'chapter_controls/jump_last_chapter' }
-    -- end, 'Last chapter')
     set('n', 'p', function()
       mpv.send { 'script-message', 'chapters/write_chapters' }
     end, 'Write chapters')
     set('n', 'f', function()
       mpv.send { 'script-message', 'dynamic_chapter_loop/toggle' }
     end, 'Toggle loop')
-    -- set('n', 'g', function()
-    --   mpv.send { 'script-message', 'chapters/write_chapters' }
-    -- end, 'Write chapters')
     set('n', 'c', function()
       mpv.send { 'script-message', 'loop_duration/toggle' }
     end, 'loopduration toggle')
@@ -144,18 +139,24 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
       local line = vim.api.nvim_get_current_line()
       mpv.send { 'script-message', 'chapters/add-chapter-b64', base64enc(line) }
     end, 'Add chapter')
+    -- set('n', 't', function()
+    --   mpv.send { 'no-osd', 'seek', 5, 'exact' }
+    -- end, 'Seek +5s')
+    -- set('n', 'T', function()
+    --   mpv.send { 'no-osd', 'seek', 10, 'exact' }
+    -- end, 'Seek +10s')
     set('n', 't', function()
-      mpv.send { 'no-osd', 'seek', 5, 'exact' }
-    end, 'Seek +5s')
-    set('n', 'T', function()
-      mpv.send { 'no-osd', 'seek', 10, 'exact' }
-    end, 'Seek +10s')
-    set('n', 'n', function()
       mpv.send { 'no-osd', 'seek', -5, 'exact' }
     end, 'Seek -5s')
-    set('n', 'N', function()
-      mpv.send { 'no-osd', 'seek', -10, 'exact' }
-    end, 'Seek -10s')
+    set('n', 'T', function()
+      mpv.send { 'no-osd', 'seek', 5, 'exact' }
+    end, 'Seek +5s')
+    -- set('n', 'n', function()
+    --   mpv.send { 'no-osd', 'seek', -5, 'exact' }
+    -- end, 'Seek -5s')
+    -- set('n', 'N', function()
+    --   mpv.send { 'no-osd', 'seek', -10, 'exact' }
+    -- end, 'Seek -10s')
     set('n', 's', function()
       mpv.send { 'cycle', 'pause' }
     end, 'Toggle pause')
@@ -166,13 +167,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
     set('n', 'w', 'j', 'Move cursor down')
     set('n', '<Down>', ':cnext<CR>', 'Next quickfix (Zen Mode)')
     set('n', '<Up>', ':cprevious<CR>', 'Previous quickfix (Zen Mode)')
-
-    -- set('n', 'v', function()
-    --   mpv.send { 'script-message', 'chapters/write_chapters' }
-    -- end, 'Write chapters')
-    -- set('n', 'z', function()
-    --   mpv.send { 'script-message', 'chapters/remove_chapter' }
-    -- end, 'Remove chapter')
 
     vim.keymap.set('v', 'o', [[:<C-u>lua require('custom.gloss').gloss_selection()<CR>]], {
       buffer = args.buf,
